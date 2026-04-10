@@ -67,22 +67,38 @@ class ChildrenViewModel @Inject constructor(
         if (name.isBlank()) return
 
         val grade = uiState.dialogGrade.trim().ifBlank { null }
+        val editingChild = uiState.editingChild
 
         viewModelScope.launch {
             uiState = uiState.copy(isSaving = true)
 
-            val editingChild = uiState.editingChild
             if (editingChild != null) {
                 updateChildUseCase(editingChild.id, name, grade)
-                    .onSuccess { loadChildren() }
+                    .onSuccess {
+                        uiState = uiState.copy(
+                            isSaving = false,
+                            showAddDialog = false,
+                            editingChild = null,
+                            dialogName = "",
+                            dialogGrade = "",
+                        )
+                        loadChildren()
+                    }
                     .onFailure { uiState = uiState.copy(isSaving = false, errorMessage = "更新に失敗しました") }
             } else {
                 createChildUseCase(name, grade)
-                    .onSuccess { loadChildren() }
+                    .onSuccess {
+                        uiState = uiState.copy(
+                            isSaving = false,
+                            showAddDialog = false,
+                            editingChild = null,
+                            dialogName = "",
+                            dialogGrade = "",
+                        )
+                        loadChildren()
+                    }
                     .onFailure { uiState = uiState.copy(isSaving = false, errorMessage = "追加に失敗しました") }
             }
-
-            uiState = uiState.copy(isSaving = false, showAddDialog = false, editingChild = null)
         }
     }
 
