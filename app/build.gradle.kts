@@ -58,6 +58,7 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:datastore"))
     implementation(project(":feature:auth"))
+    implementation(project(":feature:children"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
