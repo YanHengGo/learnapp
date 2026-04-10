@@ -1,55 +1,56 @@
 package com.learn.app.core.data.repository
 
+import com.learn.app.core.data.mapper.toModel
 import com.learn.app.core.domain.repository.TaskRepository
 import com.learn.app.core.model.Task
 import com.learn.app.core.network.LearnApiService
-import com.learn.app.core.network.TaskResponse
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import com.learn.app.core.network.request.CreateTaskRequest
+import com.learn.app.core.network.request.ReorderItem
+import com.learn.app.core.network.request.ReorderRequest
+import com.learn.app.core.network.request.UpdateTaskRequest
 import javax.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
     private val api: LearnApiService,
 ) : TaskRepository {
 
-    override fun getTasks(childId: String, archived: Boolean): Flow<List<Task>> = flow {
-        val response = api.getTasks(childId, archived)
-        emit(response.tasks.map { it.toModel() })
-    }
+    override suspend fun getTasks(childId: String, archived: Boolean): List<Task> =
+        api.getTasks(childId, archived).map { it.toModel() }
 
     override suspend fun createTask(childId: String, task: Task): Task =
-        api.createTask(childId, task.toBody()).toModel()
+        api.createTask(childId, task.toCreateRequest()).toModel()
 
-    override suspend fun updateTask(childId: String, task: Task): Task =
-        api.updateTask(childId, task.id, task.toBody()).toModel()
+    override suspend fun updateTask(childId: String, taskId: String, task: Task): Task =
+        api.updateTask(childId, taskId, task.toUpdateRequest()).toModel()
 
-    override suspend fun archiveTask(taskId: String, archived: Boolean) {
-        api.patchTask(taskId, mapOf("is_archived" to archived))
+    override suspend fun patchTask(taskId: String, fields: Map<String, Any?>): Task =
+        api.patchTask(taskId, fields).toModel()
+
+    override suspend fun reorderTasks(childId: String, orders: List<Pair<String, Int>>) {
+        val body = ReorderRequest(
+            orders = orders.map { (taskId, sortOrder) -> ReorderItem(taskId, sortOrder) },
+        )
+        api.reorderTasks(childId, body)
     }
 
-    override suspend fun reorderTasks(childId: String, taskIds: List<String>) {
-        api.updateTask(childId, "reorder", mapOf("task_ids" to taskIds))
-    }
-
-    private fun TaskResponse.toModel() = Task(
-        id = id,
-        childId = childId,
+    private fun Task.toCreateRequest() = CreateTaskRequest(
         name = name,
+        description = description,
         subject = subject,
         defaultMinutes = defaultMinutes,
         daysMask = daysMask,
-        sortOrder = sortOrder,
-        isArchived = isArchived,
         startDate = startDate,
         endDate = endDate,
     )
 
-    private fun Task.toBody(): Map<String, Any?> = mapOf(
-        "name" to name,
-        "subject" to subject,
-        "default_minutes" to defaultMinutes,
-        "days_mask" to daysMask,
-        "start_date" to startDate,
-        "end_date" to endDate,
+    private fun Task.toUpdateRequest() = UpdateTaskRequest(
+        name = name,
+        description = description,
+        subject = subject,
+        defaultMinutes = defaultMinutes,
+        daysMask = daysMask,
+        isArchived = isArchived,
+        startDate = startDate,
+        endDate = endDate,
     )
 }

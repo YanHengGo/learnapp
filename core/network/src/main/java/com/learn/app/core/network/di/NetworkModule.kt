@@ -29,7 +29,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:3000/") // ローカル開発用。本番は環境変数等で切り替え
+            .baseUrl("https://ts-memo-api-1.onrender.com/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
