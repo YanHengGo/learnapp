@@ -24,4 +24,15 @@ dependencyResolutionManagement {
 
 rootProject.name = "LearnApp"
 include(":app")
- 
+include(":core:model")
+include(":core:common")
+include(":core:domain")
+include(":core:network")
+include(":core:data")
+include(":core:datastore")
+include(":core:ui")
+include(":feature:auth")
+include(":feature:children")
+include(":feature:tasks")
+include(":feature:daily")
+include(":feature:summary")
