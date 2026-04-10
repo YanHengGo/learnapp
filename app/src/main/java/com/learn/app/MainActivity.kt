@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LearnAppTheme {
-                // TODO: NavHost を設定する
+                NavGraph()
             }
         }
     }
