@@ -6,9 +6,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.learn.app.feature.auth.AuthScreen
 import com.learn.app.feature.children.ChildrenScreen
-import com.learn.app.feature.daily.DailyScreen
-import com.learn.app.feature.summary.SummaryScreen
-import com.learn.app.feature.tasks.TasksScreen
 
 @Composable
 fun NavGraph() {
@@ -39,36 +36,22 @@ fun NavGraph() {
             )
         }
         composable("children") {
-            val today = java.time.LocalDate.now().toString()
             ChildrenScreen(
                 onChildSelected = { childId ->
-                    navController.navigate("daily/$childId/$today")
+                    navController.navigate("home/$childId") {
+                        popUpTo("children") { inclusive = true }
+                    }
                 }
             )
         }
-        composable("tasks/{childId}") { backStackEntry ->
+        composable("home/{childId}") { backStackEntry ->
             val childId = backStackEntry.arguments?.getString("childId") ?: ""
-            TasksScreen(
+            HomeScreen(
                 childId = childId,
-                onBack = { navController.popBackStack() },
-            )
-        }
-        composable("daily/{childId}/{date}") { backStackEntry ->
-            val childId = backStackEntry.arguments?.getString("childId") ?: ""
-            val date = backStackEntry.arguments?.getString("date") ?: ""
-            DailyScreen(
-                childId = childId,
-                date = date,
-                onBack = { navController.popBackStack() },
-            )
-        }
-        composable("summary/{childId}") { backStackEntry ->
-            val childId = backStackEntry.arguments?.getString("childId") ?: ""
-            SummaryScreen(
-                childId = childId,
-                onBack = { navController.popBackStack() },
-                onDaySelected = { date ->
-                    navController.navigate("daily/$childId/$date")
+                onChildSwitch = { newChildId ->
+                    navController.navigate("home/$newChildId") {
+                        popUpTo("home/$childId") { inclusive = true }
+                    }
                 },
             )
         }
