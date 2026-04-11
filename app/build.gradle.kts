@@ -60,6 +60,7 @@ dependencies {
     implementation(project(":feature:auth"))
     implementation(project(":feature:children"))
     implementation(project(":feature:tasks"))
+    implementation(project(":feature:daily"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
