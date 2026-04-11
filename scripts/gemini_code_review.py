@@ -12,16 +12,13 @@ def main():
 
     if not all([gemini_api_key, github_token, pr_diff, repo, pr_number]):
         print("Missing required environment variables.")
-        if not gemini_api_key: print("Missing GEMINI_API_KEY")
-        if not github_token: print("Missing GITHUB_TOKEN")
-        if not pr_diff: print("Missing PR_DIFF")
-        if not repo: print("Missing GITHUB_REPOSITORY")
-        if not pr_number: print("Missing PR_NUMBER")
         sys.exit(1)
 
     # Configure Gemini with the NEW SDK (google-genai)
     client = genai.Client(api_key=gemini_api_key)
-    model_id = "gemini-1.5-flash"
+    
+    # Try gemini-2.0-flash (Recommended)
+    model_id = "gemini-2.0-flash"
 
     prompt = f"""
     あなたは Android/Kotlin 開発のエキスパートとして、プルリクエストのコードレビューを行ってください。
@@ -41,15 +38,22 @@ def main():
     """
 
     try:
-        # The new SDK uses client.models.generate_content
         response = client.models.generate_content(
             model=model_id,
             contents=prompt
         )
         review_comment = response.text
     except Exception as e:
-        print(f"Error calling Gemini API: {e}")
-        # Optionally print more info for debugging
+        print(f"Error calling Gemini API with {model_id}: {e}")
+        
+        # DEBUG: List available models if failed
+        print("\nAttempting to list available models for your API key...")
+        try:
+            available_models = [m.name for m in client.models.list()]
+            print(f"Available models: {available_models}")
+        except Exception as list_error:
+            print(f"Could not list models: {list_error}")
+            
         sys.exit(1)
 
     # Post comment to GitHub
