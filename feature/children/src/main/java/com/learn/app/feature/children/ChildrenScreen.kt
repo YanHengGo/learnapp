@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -47,6 +48,7 @@ import com.learn.app.core.model.Child
 @Composable
 fun ChildrenScreen(
     onChildSelected: (String) -> Unit,
+    onLoggedOut: () -> Unit,
     viewModel: ChildrenViewModel = hiltViewModel(),
 ) {
     val uiState = viewModel.uiState
@@ -61,7 +63,14 @@ fun ChildrenScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("子ども一覧") })
+            TopAppBar(
+                title = { Text("子ども一覧") },
+                actions = {
+                    IconButton(onClick = viewModel::onShowLogoutConfirm) {
+                        Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "ログアウト")
+                    }
+                },
+            )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = viewModel::onShowAddDialog) {
@@ -103,6 +112,24 @@ fun ChildrenScreen(
                 }
             }
         }
+    }
+
+    if (uiState.showLogoutConfirm) {
+        AlertDialog(
+            onDismissRequest = viewModel::onDismissLogoutConfirm,
+            title = { Text("ログアウト") },
+            text = { Text("ログアウトしますか？") },
+            confirmButton = {
+                TextButton(onClick = { viewModel.onLogout(onLoggedOut) }) {
+                    Text("ログアウト")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::onDismissLogoutConfirm) {
+                    Text("キャンセル")
+                }
+            },
+        )
     }
 
     if (uiState.showAddDialog || uiState.editingChild != null) {
@@ -155,14 +182,6 @@ private fun ChildCard(
                         text = child.grade ?: "",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                if (!child.isActive) {
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = "非アクティブ",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error,
                     )
                 }
             }
