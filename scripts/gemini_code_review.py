@@ -1,7 +1,9 @@
 import os
 import sys
 import requests
+import time
 from google import genai
+from google.genai import errors
 
 def main():
     gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -14,11 +16,10 @@ def main():
         print("Missing required environment variables.")
         sys.exit(1)
 
-    # Configure Gemini with the NEW SDK (google-genai)
     client = genai.Client(api_key=gemini_api_key)
     
-    # Try gemini-2.0-flash (Recommended)
-    model_id = "gemini-2.0-flash"
+    # 無料枠で最も利用可能な可能性が高い gemini-1.5-flash を使用
+    model_id = "gemini-1.5-flash"
 
     prompt = f"""
     あなたは Android/Kotlin 開発のエキスパートとして、プルリクエストのコードレビューを行ってください。
@@ -37,23 +38,29 @@ def main():
     {pr_diff}
     """
 
-    try:
-        response = client.models.generate_content(
-            model=model_id,
-            contents=prompt
-        )
-        review_comment = response.text
-    except Exception as e:
-        print(f"Error calling Gemini API with {model_id}: {e}")
-        
-        # DEBUG: List available models if failed
-        print("\nAttempting to list available models for your API key...")
+    review_comment = None
+    # 429 エラー時のための簡単なリトライ
+    for attempt in range(2):
         try:
-            available_models = [m.name for m in client.models.list()]
-            print(f"Available models: {available_models}")
-        except Exception as list_error:
-            print(f"Could not list models: {list_error}")
-            
+            response = client.models.generate_content(
+                model=model_id,
+                contents=prompt
+            )
+            review_comment = response.text
+            break
+        except errors.ClientError as e:
+            if "429" in str(e) and attempt == 0:
+                print("Rate limit exceeded. Waiting 30 seconds before retrying...")
+                time.sleep(30)
+                continue
+            print(f"Error calling Gemini API with {model_id}: {e}")
+            sys.exit(1)
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            sys.exit(1)
+
+    if not review_comment:
+        print("Failed to generate review comment.")
         sys.exit(1)
 
     # Post comment to GitHub
