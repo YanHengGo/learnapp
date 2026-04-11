@@ -1,7 +1,7 @@
 import os
 import sys
 import requests
-import google.generativeai as genai
+from google import genai
 
 def main():
     gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -12,7 +12,6 @@ def main():
 
     if not all([gemini_api_key, github_token, pr_diff, repo, pr_number]):
         print("Missing required environment variables.")
-        # Print which ones are missing for easier debugging
         if not gemini_api_key: print("Missing GEMINI_API_KEY")
         if not github_token: print("Missing GITHUB_TOKEN")
         if not pr_diff: print("Missing PR_DIFF")
@@ -20,9 +19,9 @@ def main():
         if not pr_number: print("Missing PR_NUMBER")
         sys.exit(1)
 
-    # Configure Gemini
-    genai.configure(api_key=gemini_api_key)
-    model = genai.GenerativeModel("gemini-1.5-flash") # 高速でコスト効率が良い
+    # Configure Gemini with the NEW SDK (google-genai)
+    client = genai.Client(api_key=gemini_api_key)
+    model_id = "gemini-1.5-flash"
 
     prompt = f"""
     あなたは Android/Kotlin 開発のエキスパートとして、プルリクエストのコードレビューを行ってください。
@@ -42,10 +41,15 @@ def main():
     """
 
     try:
-        response = model.generate_content(prompt)
+        # The new SDK uses client.models.generate_content
+        response = client.models.generate_content(
+            model=model_id,
+            contents=prompt
+        )
         review_comment = response.text
     except Exception as e:
         print(f"Error calling Gemini API: {e}")
+        # Optionally print more info for debugging
         sys.exit(1)
 
     # Post comment to GitHub
