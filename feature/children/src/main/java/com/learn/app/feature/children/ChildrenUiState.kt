@@ -11,4 +11,5 @@ data class ChildrenUiState(
     val dialogName: String = "",
     val dialogGrade: String = "",
     val isSaving: Boolean = false,
+    val showLogoutConfirm: Boolean = false,
 )

@@ -42,7 +42,12 @@ fun NavGraph() {
                         popUpTo("children") { inclusive = false }
                         launchSingleTop = true
                     }
-                }
+                },
+                onLoggedOut = {
+                    navController.navigate("auth") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
             )
         }
         composable("home/{childId}") { backStackEntry ->

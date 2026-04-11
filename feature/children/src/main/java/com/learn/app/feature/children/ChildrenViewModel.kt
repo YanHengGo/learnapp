@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.learn.app.core.domain.usecase.CreateChildUseCase
 import com.learn.app.core.domain.usecase.DeleteChildUseCase
 import com.learn.app.core.domain.usecase.GetChildrenUseCase
+import com.learn.app.core.domain.usecase.LogoutUseCase
 import com.learn.app.core.domain.usecase.UpdateChildUseCase
 import com.learn.app.core.model.Child
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,7 @@ class ChildrenViewModel @Inject constructor(
     private val createChildUseCase: CreateChildUseCase,
     private val updateChildUseCase: UpdateChildUseCase,
     private val deleteChildUseCase: DeleteChildUseCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
 
     var uiState by mutableStateOf(ChildrenUiState())
@@ -112,5 +114,15 @@ class ChildrenViewModel @Inject constructor(
 
     fun onErrorDismiss() {
         uiState = uiState.copy(errorMessage = null)
+    }
+
+    fun onShowLogoutConfirm() { uiState = uiState.copy(showLogoutConfirm = true) }
+    fun onDismissLogoutConfirm() { uiState = uiState.copy(showLogoutConfirm = false) }
+
+    fun onLogout(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            logoutUseCase()
+            onSuccess()
+        }
     }
 }
