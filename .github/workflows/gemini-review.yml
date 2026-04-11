@@ -26,8 +26,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install google-genai requests
-
+#          pip install google-genai requests
+          pip uninstall -y google-generativeai
+          pip install google-genai
       - name: Get PR diff
         id: get_diff
         run: |
