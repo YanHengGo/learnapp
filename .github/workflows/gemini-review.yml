@@ -1,0 +1,54 @@
+name: Gemini Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install google-generativeai requests
+
+      - name: Get PR diff
+        id: get_diff
+        run: |
+          # Fetch the base branch to ensure it exists
+          git fetch origin ${{ github.base_ref }}
+          # Get the diff between the base and head
+          git diff origin/${{ github.base_ref }}...HEAD > pr_diff.txt
+          # Limit diff size to prevent environment variable overflow (optional but recommended)
+          if [ $(wc -c < pr_diff.txt) -gt 100000 ]; then
+            echo "Diff is too large, trimming to 100KB"
+            head -c 100000 pr_diff.txt > pr_diff_trimmed.txt
+            mv pr_diff_trimmed.txt pr_diff.txt
+          fi
+          # Set as environment variable using multiline syntax
+          echo "PR_DIFF<<EOF" >> $GITHUB_ENV
+          cat pr_diff.txt >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Run Gemini Review
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/gemini_code_review.py
