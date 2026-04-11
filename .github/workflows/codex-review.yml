@@ -1,106 +1,20 @@
-name: Codex Code Review
+name: Codex Review
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:   # 手动触发（先用这个最稳）
+  pull_request:        # PR 时自动触发
 
 jobs:
-  codex_review:
+  codex:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      issues: write
-      pull-requests: read
-    outputs:
-      final_message: ${{ steps.run_codex.outputs.final-message }}
+
     steps:
-      - name: Checkout merge commit
-        uses: actions/checkout@v5
-        with:
-          ref: refs/pull/${{ github.event.pull_request.number }}/merge
-          fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Pre-fetch base and head refs
-        run: |
-          git fetch --no-tags origin \
-            ${{ github.event.pull_request.base.ref }} \
-            +refs/pull/${{ github.event.pull_request.number }}/head
-
-      - name: Run Codex review
-        id: run_codex
+      - name: Run Codex
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           prompt: |
-            You are reviewing GitHub pull request #${{ github.event.pull_request.number }} in the repository ${{ github.repository }}.
-
-            Review only the changes introduced by this pull request compared with origin/${{ github.event.pull_request.base.ref }}.
-            Use the checked out repository and git history to inspect the patch carefully.
-
-            Focus on:
-            - Bugs and behavioral regressions
-            - Crash risks and nullability issues
-            - Security or permission mistakes
-            - Missing validation and edge cases
-            - Missing or weak tests when the change is risky
-
-            Ignore:
-            - Pure style nits
-            - Refactors with no behavioral impact unless they introduce risk
-
-            Output rules:
-            - If there are actionable findings, return a short markdown review comment.
-            - Start with `## Codex Review`.
-            - List findings ordered by severity.
-            - For each finding, include file path and a brief explanation.
-            - If there are no actionable findings, say `## Codex Review` followed by `No actionable findings.`
-            - Keep the response concise and ready to post directly as a PR comment.
-          sandbox: read-only
-          safety-strategy: drop-sudo
-          output-file: codex-review.md
-
-  post_review:
-    runs-on: ubuntu-latest
-    needs: codex_review
-    if: needs.codex_review.outputs.final_message != ''
-    permissions:
-      issues: write
-    steps:
-      - name: Create or update Codex review comment
-        uses: actions/github-script@v7
-        env:
-          CODEX_FINAL_MESSAGE: ${{ needs.codex_review.outputs.final_message }}
-        with:
-          github-token: ${{ github.token }}
-          script: |
-            const marker = '<!-- codex-review -->';
-            const body = `${marker}\n${process.env.CODEX_FINAL_MESSAGE}`;
-            const { owner, repo } = context.repo;
-            const issue_number = context.payload.pull_request.number;
-
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner,
-              repo,
-              issue_number,
-              per_page: 100,
-            });
-
-            const existing = comments.find((comment) =>
-              comment.user?.type === 'Bot' && comment.body?.includes(marker)
-            );
-
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner,
-                repo,
-                comment_id: existing.id,
-                body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number,
-                body,
-              });
-            }
+            Please review this pull request and suggest improvements.
