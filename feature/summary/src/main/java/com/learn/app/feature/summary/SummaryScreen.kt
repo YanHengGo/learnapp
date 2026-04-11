@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -74,12 +76,21 @@ fun SummaryScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("集計") },
+                title = {
+                    Box(
+                        modifier = Modifier.fillMaxHeight(),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        Text("集計")
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
                     }
                 },
+                windowInsets = WindowInsets(0, 0, 0, 0),
+                modifier = Modifier.height(48.dp),
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },

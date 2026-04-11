@@ -3,10 +3,10 @@ package com.learn.app.feature.tasks
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -69,12 +69,21 @@ fun TasksScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("タスク管理") },
+                title = {
+                    Box(
+                        modifier = Modifier.fillMaxHeight(),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        Text("タスク管理")
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
                     }
                 },
+                windowInsets = WindowInsets(0, 0, 0, 0),
+                modifier = Modifier.height(48.dp),
             )
         },
         floatingActionButton = {
@@ -182,7 +191,7 @@ private fun daysLabel(mask: Int): String {
     return DAY_LABELS.filterIndexed { i, _ -> mask.hasDayBit(i) }.joinToString("")
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TaskDialog(
     uiState: TasksUiState,
@@ -245,7 +254,7 @@ private fun TaskDialog(
                     enabled = !uiState.isSaving,
                 )
                 Text("曜日", style = MaterialTheme.typography.labelMedium)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     DAY_LABELS.forEachIndexed { index, label ->
                         FilterChip(
                             selected = uiState.dialogDaysMask.hasDayBit(index),
