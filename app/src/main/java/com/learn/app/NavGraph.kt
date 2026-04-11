@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.learn.app.feature.auth.AuthScreen
 import com.learn.app.feature.children.ChildrenScreen
 import com.learn.app.feature.daily.DailyScreen
+import com.learn.app.feature.summary.SummaryScreen
 import com.learn.app.feature.tasks.TasksScreen
 
 @Composable
@@ -45,6 +46,16 @@ fun NavGraph() {
                 childId = childId,
                 date = date,
                 onBack = { navController.popBackStack() },
+            )
+        }
+        composable("summary/{childId}") { backStackEntry ->
+            val childId = backStackEntry.arguments?.getString("childId") ?: ""
+            SummaryScreen(
+                childId = childId,
+                onBack = { navController.popBackStack() },
+                onDaySelected = { date ->
+                    navController.navigate("daily/$childId/$date")
+                },
             )
         }
     }
