@@ -14,7 +14,21 @@ import com.learn.app.feature.tasks.TasksScreen
 fun NavGraph() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "auth") {
+    NavHost(navController = navController, startDestination = "splash") {
+        composable("splash") {
+            SplashScreen(
+                onNavigateToAuth = {
+                    navController.navigate("auth") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                },
+                onNavigateToChildren = {
+                    navController.navigate("children") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                },
+            )
+        }
         composable("auth") {
             AuthScreen(
                 onAuthSuccess = {
