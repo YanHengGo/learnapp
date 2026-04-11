@@ -39,7 +39,8 @@ fun NavGraph() {
             ChildrenScreen(
                 onChildSelected = { childId ->
                     navController.navigate("home/$childId") {
-                        popUpTo("children") { inclusive = true }
+                        popUpTo("children") { inclusive = false }
+                        launchSingleTop = true
                     }
                 }
             )
@@ -48,6 +49,7 @@ fun NavGraph() {
             val childId = backStackEntry.arguments?.getString("childId") ?: ""
             HomeScreen(
                 childId = childId,
+                onBack = { navController.popBackStack() },
                 onChildSwitch = { newChildId ->
                     navController.navigate("home/$newChildId") {
                         popUpTo("home/$childId") { inclusive = true }

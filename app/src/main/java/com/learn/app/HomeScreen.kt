@@ -1,5 +1,6 @@
 package com.learn.app
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,6 +39,7 @@ import java.time.LocalDate
 @Composable
 fun HomeScreen(
     childId: String,
+    onBack: () -> Unit,
     onChildSwitch: (newChildId: String) -> Unit,
     onLoggedOut: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
@@ -47,6 +49,12 @@ fun HomeScreen(
     val today = LocalDate.now().toString()
 
     val currentRoute = innerNavController.currentBackStackEntryAsState().value?.destination?.route
+    val isAtStartDestination = currentRoute?.startsWith("daily") == true
+
+    BackHandler(enabled = isAtStartDestination) {
+        onBack()
+    }
+
     val selectedTab = when {
         currentRoute?.startsWith("tasks") == true -> HomeTab.TASKS
         currentRoute?.startsWith("summary") == true -> HomeTab.SUMMARY
@@ -112,19 +120,19 @@ fun HomeScreen(
                 DailyScreen(
                     childId = childId,
                     date = today,
-                    onBack = {},
+                    onBack = onBack,
                 )
             }
             composable("tasks/{childId}") {
                 TasksScreen(
                     childId = childId,
-                    onBack = {},
+                    onBack = onBack,
                 )
             }
             composable("summary/{childId}") {
                 SummaryScreen(
                     childId = childId,
-                    onBack = {},
+                    onBack = onBack,
                     onDaySelected = { date ->
                         innerNavController.navigate("daily_detail/$childId/$date")
                     },
