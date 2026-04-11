@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -37,6 +39,7 @@ import java.time.LocalDate
 fun HomeScreen(
     childId: String,
     onChildSwitch: (newChildId: String) -> Unit,
+    onLoggedOut: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState = viewModel.uiState
@@ -57,6 +60,11 @@ fun HomeScreen(
                     TextButton(onClick = viewModel::onShowSwitcher) {
                         Text(text = uiState.selectedChildName.ifBlank { "..." })
                         Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "子どもを切り替え")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = viewModel::onShowLogoutConfirm) {
+                        Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "ログアウト")
                     }
                 },
             )
@@ -142,6 +150,26 @@ fun HomeScreen(
                 onChildSwitch(newChildId)
             },
             onDismiss = viewModel::onDismissSwitcher,
+        )
+    }
+
+    if (uiState.showLogoutConfirm) {
+        AlertDialog(
+            onDismissRequest = viewModel::onDismissLogoutConfirm,
+            title = { Text("ログアウト") },
+            text = { Text("ログアウトしますか？") },
+            confirmButton = {
+                TextButton(
+                    onClick = { viewModel.onLogout(onLoggedOut) },
+                ) {
+                    Text("ログアウト")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::onDismissLogoutConfirm) {
+                    Text("キャンセル")
+                }
+            },
         )
     }
 }

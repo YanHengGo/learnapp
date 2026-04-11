@@ -53,6 +53,11 @@ fun NavGraph() {
                         popUpTo("home/$childId") { inclusive = true }
                     }
                 },
+                onLoggedOut = {
+                    navController.navigate("auth") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
             )
         }
     }
