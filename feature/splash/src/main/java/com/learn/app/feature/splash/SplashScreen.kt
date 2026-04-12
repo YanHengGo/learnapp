@@ -1,4 +1,4 @@
-package com.learn.app
+package com.learn.app.feature.splash
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

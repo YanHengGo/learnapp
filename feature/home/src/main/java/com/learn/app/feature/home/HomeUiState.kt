@@ -1,4 +1,4 @@
-package com.learn.app
+package com.learn.app.feature.home
 
 import com.learn.app.core.model.Child
 
