@@ -4,6 +4,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -96,8 +98,8 @@ class ChildrenScreenTest {
     @Test
     fun emptyChildren_showsEmptyMessage() {
         setContent(ChildrenUiState(children = emptyList()))
-        composeTestRule.onNodeWithText("子どもが登録されていません").assertIsDisplayed()
-        composeTestRule.onNodeWithText("右下のボタンから追加してください").assertIsDisplayed()
+        composeTestRule.onNodeWithText("子どもが登録されていません", substring = true).assertIsDisplayed()
+        composeTestRule.onNodeWithText("右下のボタンから追加してください", substring = true).assertIsDisplayed()
     }
 
     @Test
@@ -260,7 +262,7 @@ class ChildrenScreenTest {
                 onLoadChildren = {},
             )
         }
-        composeTestRule.onNodeWithText("ログアウト").performClick()
+        composeTestRule.onNode(hasText("ログアウト") and hasClickAction()).performClick()
         assertTrue(called)
     }
 }
