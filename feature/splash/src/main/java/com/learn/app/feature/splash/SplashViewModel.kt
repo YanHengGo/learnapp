@@ -1,4 +1,4 @@
-package com.learn.app
+package com.learn.app.feature.splash
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
