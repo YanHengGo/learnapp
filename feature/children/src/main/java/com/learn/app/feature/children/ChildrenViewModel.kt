@@ -33,13 +33,13 @@ class ChildrenViewModel @Inject constructor(
 
     fun loadChildren() {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true, errorMessage = null)
+            uiState = uiState.copy(isLoading = true, isLoadError = false, errorMessage = null)
             getChildrenUseCase()
                 .onSuccess { children ->
-                    uiState = uiState.copy(isLoading = false, children = children)
+                    uiState = uiState.copy(isLoading = false, isLoadError = false, children = children)
                 }
                 .onFailure {
-                    uiState = uiState.copy(isLoading = false, errorMessage = "データの取得に失敗しました")
+                    uiState = uiState.copy(isLoading = false, isLoadError = true, errorMessage = "データの取得に失敗しました")
                 }
         }
     }
