@@ -1,0 +1,22 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]  # PR作成・コミット追加時
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write  # PRへのコメント投稿に必要
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 差分取得のため全履歴が必要
+
+      - name: Claude Code Review
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
