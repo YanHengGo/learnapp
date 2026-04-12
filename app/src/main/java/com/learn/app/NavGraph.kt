@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.learn.app.feature.auth.AuthScreen
 import com.learn.app.feature.children.ChildrenScreen
+import com.learn.app.feature.home.HomeScreen
 
 @Composable
 fun NavGraph() {

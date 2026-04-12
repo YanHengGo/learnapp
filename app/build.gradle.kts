@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(project(":feature:auth"))
     implementation(project(":feature:children"))
+    implementation(project(":feature:home"))
     implementation(project(":feature:tasks"))
     implementation(project(":feature:daily"))
     implementation(project(":feature:summary"))
