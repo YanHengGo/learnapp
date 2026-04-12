@@ -44,20 +44,56 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.learn.app.core.model.Child
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChildrenScreen(
     onChildSelected: (String) -> Unit,
     onLoggedOut: () -> Unit,
     viewModel: ChildrenViewModel = hiltViewModel(),
 ) {
-    val uiState = viewModel.uiState
+    ChildrenContent(
+        uiState = viewModel.uiState,
+        onChildSelected = onChildSelected,
+        onLoggedOut = onLoggedOut,
+        onShowAddDialog = viewModel::onShowAddDialog,
+        onShowEditDialog = viewModel::onShowEditDialog,
+        onDeleteChild = viewModel::onDeleteChild,
+        onShowLogoutConfirm = viewModel::onShowLogoutConfirm,
+        onDismissLogoutConfirm = viewModel::onDismissLogoutConfirm,
+        onLogout = { viewModel.onLogout(onLoggedOut) },
+        onDismissDialog = viewModel::onDismissDialog,
+        onNameChange = viewModel::onDialogNameChange,
+        onGradeChange = viewModel::onDialogGradeChange,
+        onSaveChild = viewModel::onSaveChild,
+        onErrorDismiss = viewModel::onErrorDismiss,
+        onLoadChildren = viewModel::loadChildren,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun ChildrenContent(
+    uiState: ChildrenUiState,
+    onChildSelected: (String) -> Unit,
+    onLoggedOut: () -> Unit,
+    onShowAddDialog: () -> Unit,
+    onShowEditDialog: (Child) -> Unit,
+    onDeleteChild: (Child) -> Unit,
+    onShowLogoutConfirm: () -> Unit,
+    onDismissLogoutConfirm: () -> Unit,
+    onLogout: () -> Unit,
+    onDismissDialog: () -> Unit,
+    onNameChange: (String) -> Unit,
+    onGradeChange: (String) -> Unit,
+    onSaveChild: () -> Unit,
+    onErrorDismiss: () -> Unit,
+    onLoadChildren: () -> Unit,
+) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let {
             snackbarHostState.showSnackbar(it)
-            viewModel.onErrorDismiss()
+            onErrorDismiss()
         }
     }
 
@@ -66,14 +102,14 @@ fun ChildrenScreen(
             TopAppBar(
                 title = { Text("子ども一覧") },
                 actions = {
-                    IconButton(onClick = viewModel::onShowLogoutConfirm) {
+                    IconButton(onClick = onShowLogoutConfirm) {
                         Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "ログアウト")
                     }
                 },
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = viewModel::onShowAddDialog) {
+            FloatingActionButton(onClick = onShowAddDialog) {
                 Icon(Icons.Filled.Add, contentDescription = "子どもを追加")
             }
         },
@@ -86,6 +122,23 @@ fun ChildrenScreen(
         ) {
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else if (uiState.isLoadError && uiState.children.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Text(
+                        text = "データの取得に失敗しました",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                    androidx.compose.material3.Button(onClick = onLoadChildren) {
+                        Text("再読み込み")
+                    }
+                }
             } else if (uiState.children.isEmpty()) {
                 Text(
                     text = "子どもが登録されていません\n右下のボタンから追加してください",
@@ -105,8 +158,8 @@ fun ChildrenScreen(
                         ChildCard(
                             child = child,
                             onClick = { onChildSelected(child.id) },
-                            onEdit = { viewModel.onShowEditDialog(child) },
-                            onDelete = { viewModel.onDeleteChild(child) },
+                            onEdit = { onShowEditDialog(child) },
+                            onDelete = { onDeleteChild(child) },
                         )
                     }
                 }
@@ -116,16 +169,16 @@ fun ChildrenScreen(
 
     if (uiState.showLogoutConfirm) {
         AlertDialog(
-            onDismissRequest = viewModel::onDismissLogoutConfirm,
+            onDismissRequest = onDismissLogoutConfirm,
             title = { Text("ログアウト") },
             text = { Text("ログアウトしますか？") },
             confirmButton = {
-                TextButton(onClick = { viewModel.onLogout(onLoggedOut) }) {
+                TextButton(onClick = onLogout) {
                     Text("ログアウト")
                 }
             },
             dismissButton = {
-                TextButton(onClick = viewModel::onDismissLogoutConfirm) {
+                TextButton(onClick = onDismissLogoutConfirm) {
                     Text("キャンセル")
                 }
             },
@@ -138,10 +191,10 @@ fun ChildrenScreen(
             name = uiState.dialogName,
             grade = uiState.dialogGrade,
             isSaving = uiState.isSaving,
-            onNameChange = viewModel::onDialogNameChange,
-            onGradeChange = viewModel::onDialogGradeChange,
-            onConfirm = viewModel::onSaveChild,
-            onDismiss = viewModel::onDismissDialog,
+            onNameChange = onNameChange,
+            onGradeChange = onGradeChange,
+            onConfirm = onSaveChild,
+            onDismiss = onDismissDialog,
         )
     }
 }
