@@ -57,13 +57,50 @@ fun TasksScreen(
     onBack: () -> Unit,
     viewModel: TasksViewModel = hiltViewModel(),
 ) {
-    val uiState = viewModel.uiState
+    TasksContent(
+        uiState = viewModel.uiState,
+        onBack = onBack,
+        onShowAddDialog = viewModel::onShowAddDialog,
+        onShowEditDialog = viewModel::onShowEditDialog,
+        onArchiveTask = viewModel::onArchiveTask,
+        onNameChange = viewModel::onNameChange,
+        onDescriptionChange = viewModel::onDescriptionChange,
+        onSubjectChange = viewModel::onSubjectChange,
+        onMinutesChange = viewModel::onMinutesChange,
+        onDayToggle = viewModel::onDayToggle,
+        onStartDateChange = viewModel::onStartDateChange,
+        onEndDateChange = viewModel::onEndDateChange,
+        onSaveTask = viewModel::onSaveTask,
+        onDismissDialog = viewModel::onDismissDialog,
+        onErrorDismiss = viewModel::onErrorDismiss,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun TasksContent(
+    uiState: TasksUiState,
+    onBack: () -> Unit,
+    onShowAddDialog: () -> Unit,
+    onShowEditDialog: (Task) -> Unit,
+    onArchiveTask: (Task) -> Unit,
+    onNameChange: (String) -> Unit,
+    onDescriptionChange: (String) -> Unit,
+    onSubjectChange: (String) -> Unit,
+    onMinutesChange: (String) -> Unit,
+    onDayToggle: (Int) -> Unit,
+    onStartDateChange: (String) -> Unit,
+    onEndDateChange: (String) -> Unit,
+    onSaveTask: () -> Unit,
+    onDismissDialog: () -> Unit,
+    onErrorDismiss: () -> Unit,
+) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let {
             snackbarHostState.showSnackbar(it)
-            viewModel.onErrorDismiss()
+            onErrorDismiss()
         }
     }
 
@@ -88,7 +125,7 @@ fun TasksScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = viewModel::onShowAddDialog) {
+            FloatingActionButton(onClick = onShowAddDialog) {
                 Icon(Icons.Filled.Add, contentDescription = "タスクを追加")
             }
         },
@@ -119,8 +156,8 @@ fun TasksScreen(
                     items(uiState.tasks, key = { it.id }) { task ->
                         TaskCard(
                             task = task,
-                            onEdit = { viewModel.onShowEditDialog(task) },
-                            onArchive = { viewModel.onArchiveTask(task) },
+                            onEdit = { onShowEditDialog(task) },
+                            onArchive = { onArchiveTask(task) },
                         )
                     }
                 }
@@ -131,15 +168,15 @@ fun TasksScreen(
     if (uiState.showDialog) {
         TaskDialog(
             uiState = uiState,
-            onNameChange = viewModel::onNameChange,
-            onDescriptionChange = viewModel::onDescriptionChange,
-            onSubjectChange = viewModel::onSubjectChange,
-            onMinutesChange = viewModel::onMinutesChange,
-            onDayToggle = viewModel::onDayToggle,
-            onStartDateChange = viewModel::onStartDateChange,
-            onEndDateChange = viewModel::onEndDateChange,
-            onConfirm = viewModel::onSaveTask,
-            onDismiss = viewModel::onDismissDialog,
+            onNameChange = onNameChange,
+            onDescriptionChange = onDescriptionChange,
+            onSubjectChange = onSubjectChange,
+            onMinutesChange = onMinutesChange,
+            onDayToggle = onDayToggle,
+            onStartDateChange = onStartDateChange,
+            onEndDateChange = onEndDateChange,
+            onConfirm = onSaveTask,
+            onDismiss = onDismissDialog,
         )
     }
 }
