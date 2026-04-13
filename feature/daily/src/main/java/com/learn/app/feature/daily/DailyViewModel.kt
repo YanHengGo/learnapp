@@ -1,8 +1,5 @@
 package com.learn.app.feature.daily
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +7,10 @@ import com.learn.app.core.domain.usecase.GetDailyViewUseCase
 import com.learn.app.core.domain.usecase.UpdateDailyLogUseCase
 import com.learn.app.core.model.DailyItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -27,8 +28,8 @@ class DailyViewModel @Inject constructor(
         if (dateStr.isNullOrBlank()) LocalDate.now() else LocalDate.parse(dateStr)
     }
 
-    var uiState by mutableStateOf(DailyUiState())
-        private set
+    private val _uiState = MutableStateFlow(DailyUiState())
+    val uiState: StateFlow<DailyUiState> = _uiState.asStateFlow()
 
     init {
         loadDailyView()
@@ -36,10 +37,10 @@ class DailyViewModel @Inject constructor(
 
     private fun loadDailyView() {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true, errorMessage = null, saveSuccess = false)
+            _uiState.update { it.copy(isLoading = true, errorMessage = null, saveSuccess = false) }
             getDailyViewUseCase(childId, currentDate.toString())
                 .onSuccess { view ->
-                    uiState = uiState.copy(
+                    _uiState.update { it.copy(
                         isLoading = false,
                         date = view.date,
                         weekday = view.weekday,
@@ -54,10 +55,10 @@ class DailyViewModel @Inject constructor(
                                           else task.defaultMinutes.toString(),
                             )
                         },
-                    )
+                    ) }
                 }
                 .onFailure {
-                    uiState = uiState.copy(isLoading = false, errorMessage = "データの取得に失敗しました")
+                    _uiState.update { it.copy(isLoading = false, errorMessage = "データの取得に失敗しました") }
                 }
         }
     }
@@ -73,29 +74,33 @@ class DailyViewModel @Inject constructor(
     }
 
     fun onToggleDone(taskId: String) {
-        uiState = uiState.copy(
-            taskRows = uiState.taskRows.map { row ->
-                if (row.taskId == taskId) {
-                    val nowDone = !row.isDone
-                    row.copy(
-                        isDone = nowDone,
-                        minutes = if (nowDone) row.defaultMinutes.toString() else "0",
-                    )
-                } else row
-            }
-        )
+        _uiState.update { state ->
+            state.copy(
+                taskRows = state.taskRows.map { row ->
+                    if (row.taskId == taskId) {
+                        val nowDone = !row.isDone
+                        row.copy(
+                            isDone = nowDone,
+                            minutes = if (nowDone) row.defaultMinutes.toString() else "0",
+                        )
+                    } else row
+                }
+            )
+        }
     }
 
     fun onMinutesChange(taskId: String, value: String) {
-        uiState = uiState.copy(
-            taskRows = uiState.taskRows.map { row ->
-                if (row.taskId == taskId) row.copy(minutes = value) else row
-            }
-        )
+        _uiState.update { state ->
+            state.copy(
+                taskRows = state.taskRows.map { row ->
+                    if (row.taskId == taskId) row.copy(minutes = value) else row
+                }
+            )
+        }
     }
 
     fun onSave() {
-        val items = uiState.taskRows.map { row ->
+        val items = _uiState.value.taskRows.map { row ->
             DailyItem(
                 taskId = row.taskId,
                 minutes = if (row.isDone) (row.minutes.toIntOrNull() ?: row.defaultMinutes) else 0,
@@ -103,22 +108,22 @@ class DailyViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            uiState = uiState.copy(isSaving = true)
+            _uiState.update { it.copy(isSaving = true) }
             updateDailyLogUseCase(childId, currentDate.toString(), items)
                 .onSuccess {
-                    uiState = uiState.copy(isSaving = false, saveSuccess = true)
+                    _uiState.update { it.copy(isSaving = false, saveSuccess = true) }
                 }
                 .onFailure {
-                    uiState = uiState.copy(isSaving = false, errorMessage = "保存に失敗しました")
+                    _uiState.update { it.copy(isSaving = false, errorMessage = "保存に失敗しました") }
                 }
         }
     }
 
     fun onErrorDismiss() {
-        uiState = uiState.copy(errorMessage = null)
+        _uiState.update { it.copy(errorMessage = null) }
     }
 
     fun onSaveSuccessDismiss() {
-        uiState = uiState.copy(saveSuccess = false)
+        _uiState.update { it.copy(saveSuccess = false) }
     }
 }

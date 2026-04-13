@@ -1,14 +1,15 @@
 package com.learn.app.feature.home
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.learn.app.core.domain.usecase.GetChildrenUseCase
 import com.learn.app.core.domain.usecase.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,8 +22,8 @@ class HomeViewModel @Inject constructor(
 
     private val childId: String = checkNotNull(savedStateHandle["childId"])
 
-    var uiState by mutableStateOf(HomeUiState())
-        private set
+    private val _uiState = MutableStateFlow(HomeUiState())
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
         loadChildren()
@@ -33,20 +34,22 @@ class HomeViewModel @Inject constructor(
             getChildrenUseCase()
                 .onSuccess { children ->
                     val current = children.find { it.id == childId }
-                    uiState = uiState.copy(
-                        children = children,
-                        selectedChildName = current?.name ?: "",
-                    )
+                    _uiState.update {
+                        it.copy(
+                            children = children,
+                            selectedChildName = current?.name ?: "",
+                        )
+                    }
                 }
         }
     }
 
-    fun onShowSwitcher() { uiState = uiState.copy(showSwitcher = true) }
-    fun onDismissSwitcher() { uiState = uiState.copy(showSwitcher = false) }
-    fun onTabSelected(tab: HomeTab) { uiState = uiState.copy(selectedTab = tab) }
+    fun onShowSwitcher() { _uiState.update { it.copy(showSwitcher = true) } }
+    fun onDismissSwitcher() { _uiState.update { it.copy(showSwitcher = false) } }
+    fun onTabSelected(tab: HomeTab) { _uiState.update { it.copy(selectedTab = tab) } }
 
-    fun onShowLogoutConfirm() { uiState = uiState.copy(showLogoutConfirm = true) }
-    fun onDismissLogoutConfirm() { uiState = uiState.copy(showLogoutConfirm = false) }
+    fun onShowLogoutConfirm() { _uiState.update { it.copy(showLogoutConfirm = true) } }
+    fun onDismissLogoutConfirm() { _uiState.update { it.copy(showLogoutConfirm = false) } }
 
     fun onLogout(onSuccess: () -> Unit) {
         viewModelScope.launch {
