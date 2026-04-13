@@ -1,6 +1,7 @@
 package com.learn.app.feature.home
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -63,53 +64,31 @@ fun HomeScreen(
         else -> HomeTab.DAILY
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    TextButton(onClick = viewModel::onShowSwitcher) {
-                        Text(text = uiState.selectedChildName.ifBlank { "..." })
-                        Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "子どもを切り替え")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = viewModel::onShowLogoutConfirm) {
-                        Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "ログアウト")
-                    }
-                },
-            )
+    HomeContent(
+        uiState = uiState,
+        childId = childId,
+        selectedTab = selectedTab,
+        onShowSwitcher = viewModel::onShowSwitcher,
+        onShowLogoutConfirm = viewModel::onShowLogoutConfirm,
+        onTabDailyClick = {
+            viewModel.onTabSelected(HomeTab.DAILY)
+            innerNavController.navigateToTab("daily/$childId")
         },
-        bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    selected = selectedTab == HomeTab.DAILY,
-                    onClick = {
-                        viewModel.onTabSelected(HomeTab.DAILY)
-                        innerNavController.navigateToTab("daily/$childId")
-                    },
-                    icon = { Icon(Icons.Filled.CalendarMonth, contentDescription = null) },
-                    label = { Text("日々") },
-                )
-                NavigationBarItem(
-                    selected = selectedTab == HomeTab.TASKS,
-                    onClick = {
-                        viewModel.onTabSelected(HomeTab.TASKS)
-                        innerNavController.navigateToTab("tasks/$childId")
-                    },
-                    icon = { Icon(Icons.Filled.Assignment, contentDescription = null) },
-                    label = { Text("タスク") },
-                )
-                NavigationBarItem(
-                    selected = selectedTab == HomeTab.SUMMARY,
-                    onClick = {
-                        viewModel.onTabSelected(HomeTab.SUMMARY)
-                        innerNavController.navigateToTab("summary/$childId")
-                    },
-                    icon = { Icon(Icons.Filled.BarChart, contentDescription = null) },
-                    label = { Text("集計") },
-                )
-            }
+        onTabTasksClick = {
+            viewModel.onTabSelected(HomeTab.TASKS)
+            innerNavController.navigateToTab("tasks/$childId")
         },
+        onTabSummaryClick = {
+            viewModel.onTabSelected(HomeTab.SUMMARY)
+            innerNavController.navigateToTab("summary/$childId")
+        },
+        onDismissSwitcher = viewModel::onDismissSwitcher,
+        onChildSelect = { newChildId ->
+            viewModel.onDismissSwitcher()
+            onChildSwitch(newChildId)
+        },
+        onDismissLogoutConfirm = viewModel::onDismissLogoutConfirm,
+        onLogout = { viewModel.onLogout(onLoggedOut) },
     ) { paddingValues ->
         NavHost(
             navController = innerNavController,
@@ -150,33 +129,88 @@ fun HomeScreen(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun HomeContent(
+    uiState: HomeUiState,
+    childId: String,
+    selectedTab: HomeTab,
+    onShowSwitcher: () -> Unit,
+    onShowLogoutConfirm: () -> Unit,
+    onTabDailyClick: () -> Unit,
+    onTabTasksClick: () -> Unit,
+    onTabSummaryClick: () -> Unit,
+    onDismissSwitcher: () -> Unit,
+    onChildSelect: (String) -> Unit,
+    onDismissLogoutConfirm: () -> Unit,
+    onLogout: () -> Unit,
+    content: @Composable (PaddingValues) -> Unit,
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    TextButton(onClick = onShowSwitcher) {
+                        Text(text = uiState.selectedChildName.ifBlank { "..." })
+                        Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "子どもを切り替え")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onShowLogoutConfirm) {
+                        Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "ログアウト")
+                    }
+                },
+            )
+        },
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = selectedTab == HomeTab.DAILY,
+                    onClick = onTabDailyClick,
+                    icon = { Icon(Icons.Filled.CalendarMonth, contentDescription = null) },
+                    label = { Text("日々") },
+                )
+                NavigationBarItem(
+                    selected = selectedTab == HomeTab.TASKS,
+                    onClick = onTabTasksClick,
+                    icon = { Icon(Icons.Filled.Assignment, contentDescription = null) },
+                    label = { Text("タスク") },
+                )
+                NavigationBarItem(
+                    selected = selectedTab == HomeTab.SUMMARY,
+                    onClick = onTabSummaryClick,
+                    icon = { Icon(Icons.Filled.BarChart, contentDescription = null) },
+                    label = { Text("集計") },
+                )
+            }
+        },
+    ) { paddingValues ->
+        content(paddingValues)
+    }
 
     if (uiState.showSwitcher) {
         ChildSwitcherDialog(
             children = uiState.children,
             currentChildId = childId,
-            onSelect = { newChildId ->
-                viewModel.onDismissSwitcher()
-                onChildSwitch(newChildId)
-            },
-            onDismiss = viewModel::onDismissSwitcher,
+            onSelect = onChildSelect,
+            onDismiss = onDismissSwitcher,
         )
     }
 
     if (uiState.showLogoutConfirm) {
         AlertDialog(
-            onDismissRequest = viewModel::onDismissLogoutConfirm,
+            onDismissRequest = onDismissLogoutConfirm,
             title = { Text("ログアウト") },
             text = { Text("ログアウトしますか？") },
             confirmButton = {
-                TextButton(
-                    onClick = { viewModel.onLogout(onLoggedOut) },
-                ) {
+                TextButton(onClick = onLogout) {
                     Text("ログアウト")
                 }
             },
             dismissButton = {
-                TextButton(onClick = viewModel::onDismissLogoutConfirm) {
+                TextButton(onClick = onDismissLogoutConfirm) {
                     Text("キャンセル")
                 }
             },
