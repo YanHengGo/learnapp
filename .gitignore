@@ -17,6 +17,9 @@ local.properties
 
 # Android
 /captures/
+
+# UIテスト スクリーンショット（git 管理対象外）
+/screenshots/
 .externalNativeBuild/
 .cxx/
 
