@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,19 +58,45 @@ fun DailyScreen(
     viewModel: DailyViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    DailyContent(
+        uiState = uiState,
+        onBack = onBack,
+        onPreviousDate = viewModel::onPreviousDate,
+        onNextDate = viewModel::onNextDate,
+        onToggleDone = viewModel::onToggleDone,
+        onMinutesChange = viewModel::onMinutesChange,
+        onSave = viewModel::onSave,
+        onErrorDismiss = viewModel::onErrorDismiss,
+        onSaveSuccessDismiss = viewModel::onSaveSuccessDismiss,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun DailyContent(
+    uiState: DailyUiState,
+    onBack: () -> Unit,
+    onPreviousDate: () -> Unit,
+    onNextDate: () -> Unit,
+    onToggleDone: (String) -> Unit,
+    onMinutesChange: (String, String) -> Unit,
+    onSave: () -> Unit,
+    onErrorDismiss: () -> Unit,
+    onSaveSuccessDismiss: () -> Unit,
+) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let {
             snackbarHostState.showSnackbar(it)
-            viewModel.onErrorDismiss()
+            onErrorDismiss()
         }
     }
 
     LaunchedEffect(uiState.saveSuccess) {
         if (uiState.saveSuccess) {
             snackbarHostState.showSnackbar("保存しました")
-            viewModel.onSaveSuccessDismiss()
+            onSaveSuccessDismiss()
         }
     }
 
@@ -104,12 +131,11 @@ fun DailyScreen(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    // 日付ナビゲーション
                     DateNavigationBar(
                         date = uiState.date,
                         weekday = uiState.weekday,
-                        onPrevious = viewModel::onPreviousDate,
-                        onNext = viewModel::onNextDate,
+                        onPrevious = onPreviousDate,
+                        onNext = onNextDate,
                     )
 
                     if (uiState.taskRows.isEmpty()) {
@@ -134,13 +160,12 @@ fun DailyScreen(
                             items(uiState.taskRows, key = { it.taskId }) { row ->
                                 TaskRow(
                                     row = row,
-                                    onToggleDone = { viewModel.onToggleDone(row.taskId) },
-                                    onMinutesChange = { viewModel.onMinutesChange(row.taskId, it) },
+                                    onToggleDone = { onToggleDone(row.taskId) },
+                                    onMinutesChange = { onMinutesChange(row.taskId, it) },
                                 )
                             }
                         }
 
-                        // 合計分数
                         val totalMinutes = uiState.taskRows
                             .filter { it.isDone }
                             .sumOf { it.minutes.toIntOrNull() ?: it.defaultMinutes }
@@ -157,13 +182,13 @@ fun DailyScreen(
                             )
                         }
 
-                        // 保存ボタン
                         Button(
-                            onClick = viewModel::onSave,
+                            onClick = onSave,
                             enabled = !uiState.isSaving,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .testTag("saveButton"),
                         ) {
                             if (uiState.isSaving) {
                                 CircularProgressIndicator(
