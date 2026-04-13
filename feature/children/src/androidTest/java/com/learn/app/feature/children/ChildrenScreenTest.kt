@@ -20,8 +20,12 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ChildrenScreenTest {
 
-    @get:Rule
+    @get:Rule(order = 0)
     val composeTestRule = createComposeRule()
+
+    /** テスト終了後に自動でスクリーンショットを保存する */
+    @get:Rule(order = 1)
+    val screenshotRule = ScreenshotCaptureRule(composeTestRule)
 
     // ─── ヘルパー ───────────────────────────────────────────────
 
