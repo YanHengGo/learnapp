@@ -66,12 +66,32 @@ fun SummaryScreen(
     viewModel: SummaryViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    SummaryContent(
+        uiState = uiState,
+        onBack = onBack,
+        onPreviousMonth = viewModel::onPreviousMonth,
+        onNextMonth = viewModel::onNextMonth,
+        onDaySelected = onDaySelected,
+        onErrorDismiss = viewModel::onErrorDismiss,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun SummaryContent(
+    uiState: SummaryUiState,
+    onBack: () -> Unit,
+    onPreviousMonth: () -> Unit,
+    onNextMonth: () -> Unit,
+    onDaySelected: (String) -> Unit,
+    onErrorDismiss: () -> Unit,
+) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let {
             snackbarHostState.showSnackbar(it)
-            viewModel.onErrorDismiss()
+            onErrorDismiss()
         }
     }
 
@@ -117,8 +137,8 @@ fun SummaryScreen(
                 item {
                     MonthNavigationBar(
                         yearMonth = uiState.yearMonth,
-                        onPrevious = viewModel::onPreviousMonth,
-                        onNext = viewModel::onNextMonth,
+                        onPrevious = onPreviousMonth,
+                        onNext = onNextMonth,
                     )
                 }
 
