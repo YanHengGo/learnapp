@@ -11,8 +11,11 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SplashScreenTest {
 
-    @get:Rule
+    @get:Rule(order = 0)
     val composeTestRule = createComposeRule()
+
+    @get:Rule(order = 1)
+    val screenshotRule = ScreenshotCaptureRule(composeTestRule)
 
     @Test
     fun showsAppTitle() {
