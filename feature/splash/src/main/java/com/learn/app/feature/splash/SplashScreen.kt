@@ -34,6 +34,11 @@ fun SplashScreen(
         }
     }
 
+    SplashContent()
+}
+
+@Composable
+internal fun SplashContent() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
