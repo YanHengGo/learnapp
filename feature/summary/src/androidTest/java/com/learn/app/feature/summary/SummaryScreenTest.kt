@@ -21,8 +21,11 @@ import java.time.YearMonth
 @RunWith(AndroidJUnit4::class)
 class SummaryScreenTest {
 
-    @get:Rule
+    @get:Rule(order = 0)
     val composeTestRule = createComposeRule()
+
+    @get:Rule(order = 1)
+    val screenshotRule = ScreenshotCaptureRule(composeTestRule)
 
     // ─── ヘルパー ───────────────────────────────────────────────
 
