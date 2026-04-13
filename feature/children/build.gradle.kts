@@ -11,6 +11,7 @@ android {
     defaultConfig {
         minSdk = 28
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["useTestStorageService"] = "true"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -18,6 +19,11 @@ android {
     }
     kotlin { jvmToolchain(11) }
     buildFeatures { compose = true }
+    testOptions {
+        // テスト出力ファイル（スクリーンショット等）を
+        // build/outputs/connected_android_test_additional_output/ へ自動収集する
+        managedDevices {}
+    }
 }
 
 dependencies {
@@ -40,5 +46,8 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
+    // TestStorage API（スクリーンショットを Gradle が自動収集する仕組み）
+    androidTestImplementation(libs.androidx.test.services)
+    androidTestUtil(libs.androidx.test.services)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
