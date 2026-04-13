@@ -40,6 +40,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +60,7 @@ fun TasksScreen(
     viewModel: TasksViewModel = hiltViewModel(),
 ) {
     TasksContent(
-        uiState = viewModel.uiState,
+        uiState = viewModel.uiState.collectAsState().value,
         onBack = onBack,
         onShowAddDialog = viewModel::onShowAddDialog,
         onShowEditDialog = viewModel::onShowEditDialog,

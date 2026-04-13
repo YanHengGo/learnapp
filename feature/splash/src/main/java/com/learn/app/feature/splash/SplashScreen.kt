@@ -10,6 +10,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -22,7 +24,7 @@ fun SplashScreen(
     onNavigateToChildren: () -> Unit,
     viewModel: SplashViewModel = hiltViewModel(),
 ) {
-    val destination = viewModel.destination
+    val destination by viewModel.destination.collectAsState()
 
     LaunchedEffect(destination) {
         when (destination) {

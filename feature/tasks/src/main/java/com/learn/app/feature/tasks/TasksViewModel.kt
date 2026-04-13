@@ -1,8 +1,5 @@
 package com.learn.app.feature.tasks
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +9,10 @@ import com.learn.app.core.domain.usecase.GetTasksUseCase
 import com.learn.app.core.domain.usecase.UpdateTaskUseCase
 import com.learn.app.core.model.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,8 +27,8 @@ class TasksViewModel @Inject constructor(
 
     private val childId: String = checkNotNull(savedStateHandle["childId"])
 
-    var uiState by mutableStateOf(TasksUiState())
-        private set
+    private val _uiState = MutableStateFlow(TasksUiState())
+    val uiState: StateFlow<TasksUiState> = _uiState.asStateFlow()
 
     init {
         loadTasks()
@@ -35,97 +36,102 @@ class TasksViewModel @Inject constructor(
 
     fun loadTasks() {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true, errorMessage = null)
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             getTasksUseCase(childId)
                 .onSuccess { tasks ->
-                    uiState = uiState.copy(isLoading = false, tasks = tasks)
+                    _uiState.update { it.copy(isLoading = false, tasks = tasks) }
                 }
                 .onFailure {
-                    uiState = uiState.copy(isLoading = false, errorMessage = "タスクの取得に失敗しました")
+                    _uiState.update { it.copy(isLoading = false, errorMessage = "タスクの取得に失敗しました") }
                 }
         }
     }
 
     fun onShowAddDialog() {
-        uiState = uiState.copy(
-            showDialog = true,
-            editingTask = null,
-            dialogName = "",
-            dialogDescription = "",
-            dialogSubject = "",
-            dialogMinutes = "30",
-            dialogDaysMask = 0b0111110,
-            dialogStartDate = "",
-            dialogEndDate = "",
-        )
+        _uiState.update {
+            it.copy(
+                showDialog = true,
+                editingTask = null,
+                dialogName = "",
+                dialogDescription = "",
+                dialogSubject = "",
+                dialogMinutes = "30",
+                dialogDaysMask = 0b0111110,
+                dialogStartDate = "",
+                dialogEndDate = "",
+            )
+        }
     }
 
     fun onShowEditDialog(task: Task) {
-        uiState = uiState.copy(
-            showDialog = true,
-            editingTask = task,
-            dialogName = task.name,
-            dialogDescription = task.description ?: "",
-            dialogSubject = task.subject,
-            dialogMinutes = task.defaultMinutes.toString(),
-            dialogDaysMask = task.daysMask,
-            dialogStartDate = task.startDate ?: "",
-            dialogEndDate = task.endDate ?: "",
-        )
+        _uiState.update {
+            it.copy(
+                showDialog = true,
+                editingTask = task,
+                dialogName = task.name,
+                dialogDescription = task.description ?: "",
+                dialogSubject = task.subject,
+                dialogMinutes = task.defaultMinutes.toString(),
+                dialogDaysMask = task.daysMask,
+                dialogStartDate = task.startDate ?: "",
+                dialogEndDate = task.endDate ?: "",
+            )
+        }
     }
 
     fun onDismissDialog() {
-        uiState = uiState.copy(showDialog = false, editingTask = null)
+        _uiState.update { it.copy(showDialog = false, editingTask = null) }
     }
 
-    fun onNameChange(v: String) { uiState = uiState.copy(dialogName = v) }
-    fun onDescriptionChange(v: String) { uiState = uiState.copy(dialogDescription = v) }
-    fun onSubjectChange(v: String) { uiState = uiState.copy(dialogSubject = v) }
-    fun onMinutesChange(v: String) { uiState = uiState.copy(dialogMinutes = v) }
+    fun onNameChange(v: String) { _uiState.update { it.copy(dialogName = v) } }
+    fun onDescriptionChange(v: String) { _uiState.update { it.copy(dialogDescription = v) } }
+    fun onSubjectChange(v: String) { _uiState.update { it.copy(dialogSubject = v) } }
+    fun onMinutesChange(v: String) { _uiState.update { it.copy(dialogMinutes = v) } }
     fun onDayToggle(dayIndex: Int) {
-        uiState = uiState.copy(dialogDaysMask = uiState.dialogDaysMask.toggleDayBit(dayIndex))
+        _uiState.update { it.copy(dialogDaysMask = it.dialogDaysMask.toggleDayBit(dayIndex)) }
     }
-    fun onStartDateChange(v: String) { uiState = uiState.copy(dialogStartDate = v) }
-    fun onEndDateChange(v: String) { uiState = uiState.copy(dialogEndDate = v) }
+    fun onStartDateChange(v: String) { _uiState.update { it.copy(dialogStartDate = v) } }
+    fun onEndDateChange(v: String) { _uiState.update { it.copy(dialogEndDate = v) } }
 
     fun onSaveTask() {
-        val name = uiState.dialogName.trim()
-        val subject = uiState.dialogSubject.trim()
-        val minutes = uiState.dialogMinutes.toIntOrNull() ?: return
+        val state = _uiState.value
+        val name = state.dialogName.trim()
+        val subject = state.dialogSubject.trim()
+        val minutes = state.dialogMinutes.toIntOrNull() ?: return
         if (name.isBlank() || subject.isBlank() || minutes <= 0) return
 
         val task = Task(
-            id = uiState.editingTask?.id ?: "",
+            id = state.editingTask?.id ?: "",
             name = name,
-            description = uiState.dialogDescription.trim().ifBlank { null },
+            description = state.dialogDescription.trim().ifBlank { null },
             subject = subject,
             defaultMinutes = minutes,
-            daysMask = uiState.dialogDaysMask,
+            daysMask = state.dialogDaysMask,
             isArchived = false,
-            startDate = uiState.dialogStartDate.trim().ifBlank { null },
-            endDate = uiState.dialogEndDate.trim().ifBlank { null },
+            startDate = state.dialogStartDate.trim().ifBlank { null },
+            endDate = state.dialogEndDate.trim().ifBlank { null },
         )
 
         viewModelScope.launch {
-            uiState = uiState.copy(isSaving = true)
-            val editingTask = uiState.editingTask
+            _uiState.update { it.copy(isSaving = true) }
+            val editingTask = _uiState.value.editingTask
             if (editingTask != null) {
                 updateTaskUseCase(childId, editingTask.id, task)
                     .onSuccess {
-                        uiState = uiState.copy(isSaving = false, showDialog = false, editingTask = null)
+                        _uiState.update { it.copy(isSaving = false, showDialog = false, editingTask = null) }
                         loadTasks()
                     }
                     .onFailure {
-                        uiState = uiState.copy(isSaving = false, errorMessage = "更新に失敗しました")
+                        _uiState.update { it.copy(isSaving = false, errorMessage = "更新に失敗しました") }
                     }
             } else {
                 createTaskUseCase(childId, task)
                     .onSuccess {
-                        uiState = uiState.copy(isSaving = false, showDialog = false)
+                        _uiState.update { it.copy(isSaving = false, showDialog = false) }
                         loadTasks()
                     }
                     .onFailure {
-                        uiState = uiState.copy(isSaving = false, errorMessage = "追加に失敗しました")
+                        _uiState.update { it.copy(isSaving = false, errorMessage = "追加に失敗しました") }
                     }
             }
         }
@@ -135,11 +141,11 @@ class TasksViewModel @Inject constructor(
         viewModelScope.launch {
             archiveTaskUseCase(task.id, true)
                 .onSuccess { loadTasks() }
-                .onFailure { uiState = uiState.copy(errorMessage = "アーカイブに失敗しました") }
+                .onFailure { _uiState.update { it.copy(errorMessage = "アーカイブに失敗しました") } }
         }
     }
 
     fun onErrorDismiss() {
-        uiState = uiState.copy(errorMessage = null)
+        _uiState.update { it.copy(errorMessage = null) }
     }
 }
