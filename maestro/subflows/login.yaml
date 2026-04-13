@@ -1,0 +1,16 @@
+# ログイン共通サブフロー
+# 他のフローから runFlow で呼び出す
+# 前提: clearState済みでアプリ起動済み
+appId: com.learn.app
+---
+- assertVisible: "学習管理アプリ"
+- tapOn: "メールアドレス"
+- inputText: ${TEST_EMAIL}
+- tapOn: "パスワード"
+- inputText: ${TEST_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: "authSubmitButton"
+- assertVisible:
+    text: "子ども一覧"
+    timeout: 10000

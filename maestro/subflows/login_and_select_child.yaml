@@ -1,0 +1,11 @@
+# ログイン → 最初の子どもを選択して HomeScreen へ遷移する共通サブフロー
+appId: com.learn.app
+---
+- runFlow: login.yaml
+# 子ども一覧の最初のカードをタップ
+- tapOn:
+    index: 0
+    below: "子ども一覧"
+- assertVisible:
+    text: "日々"
+    timeout: 10000

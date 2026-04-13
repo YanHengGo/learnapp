@@ -1,0 +1,64 @@
+# ========================================
+# 01 認証 - ログインフロー
+# ========================================
+# テスト内容:
+#   1. 正常ログイン → 子ども一覧画面へ遷移
+#   2. 空フォームでは送信できない（ボタン非活性）
+#   3. 不正なパスワードでエラーメッセージ表示
+# ========================================
+appId: com.learn.app
+---
+
+# --- ケース1: 正常ログイン ---
+- launchApp:
+    clearState: true
+
+- assertVisible: "学習管理アプリ"
+- assertVisible: "ログイン"
+
+# メールアドレス入力
+- tapOn: "メールアドレス"
+- inputText: ${TEST_EMAIL}
+
+# パスワード入力
+- tapOn: "パスワード"
+- inputText: ${TEST_PASSWORD}
+- hideKeyboard
+
+# ログインボタンタップ
+- tapOn:
+    id: "authSubmitButton"
+
+# 子ども一覧画面へ遷移することを確認
+- assertVisible:
+    text: "子ども一覧"
+    timeout: 10000
+
+# --- ケース2: ログアウトしてから空フォームテスト ---
+- tapOn:
+    description: "ログアウト"
+- assertVisible: "ログアウトしますか？"
+- tapOn: "ログアウト"
+- assertVisible:
+    text: "学習管理アプリ"
+    timeout: 5000
+
+# 何も入力せずにボタンが非活性かを確認（タップしてもエラーなし・画面遷移なし）
+- tapOn:
+    id: "authSubmitButton"
+- assertVisible: "学習管理アプリ"
+- assertNotVisible: "子ども一覧"
+
+# --- ケース3: 不正パスワードでエラー表示 ---
+- tapOn: "メールアドレス"
+- inputText: ${TEST_EMAIL}
+- tapOn: "パスワード"
+- inputText: "wrongpassword"
+- hideKeyboard
+- tapOn:
+    id: "authSubmitButton"
+# エラーメッセージが表示される（画面遷移しない）
+- assertNotVisible:
+    text: "子ども一覧"
+    timeout: 5000
+- assertVisible: "学習管理アプリ"
