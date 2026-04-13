@@ -40,6 +40,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
@@ -70,7 +71,7 @@ fun AuthScreen(
 }
 
 @Composable
-private fun AuthContent(
+internal fun AuthContent(
     uiState: AuthUiState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
@@ -183,7 +184,8 @@ private fun AuthContent(
             enabled = !uiState.isLoading,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(52.dp),
+                .height(52.dp)
+                .testTag("authSubmitButton"),
         ) {
             Text(
                 text = if (uiState.mode == AuthMode.LOGIN) "ログイン" else "新規登録",
