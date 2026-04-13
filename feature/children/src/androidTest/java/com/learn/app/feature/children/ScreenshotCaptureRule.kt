@@ -13,8 +13,8 @@ import org.junit.runner.Description
  * Compose UIテスト実行後に自動でスクリーンショットを保存する TestWatcher Rule。
  *
  * 保存先:
- *   build/outputs/connected_android_test_additional_output/debug/connected/<device>/screenshots/
- *   ※ AndroidTestStorageService 経由で Gradle が自動収集する（adb 不要）
+ *   screenshots/children/NNN/  （NNN は実行ごとにカウントアップ）
+ *   ※ TestStorage → Gradle 中継 → collectScreenshots タスクが最終的にコピー（adb 不要）
  *
  * 使い方:
  *   @get:Rule(order = 0) val composeTestRule = createComposeRule()

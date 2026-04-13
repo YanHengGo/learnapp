@@ -20,8 +20,8 @@ android {
     kotlin { jvmToolchain(11) }
     buildFeatures { compose = true }
     testOptions {
-        // テスト出力ファイル（スクリーンショット等）を
-        // build/outputs/connected_android_test_additional_output/ へ自動収集する
+        // TestStorage の出力を Gradle が中継し、collectScreenshots タスクが
+        // screenshots/children/NNN/ へコピーする
         managedDevices {}
     }
 }
