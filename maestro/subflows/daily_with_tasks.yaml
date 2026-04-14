@@ -1,0 +1,25 @@
+# タスクが存在する日の記録操作サブフロー
+appId: com.learn.app
+---
+# 最初のタスクの Checkbox をタップ（完了にする）
+- tapOn:
+    type: "CheckBox"
+    index: 0
+
+# 完了時に分フィールドが有効になる → 時間を入力
+- tapOn:
+    label: "分"
+    index: 0
+- clearTextField:
+    label: "分"
+    index: 0
+- inputText: "25"
+- hideKeyboard
+
+# 保存する
+- tapOn:
+    id: "saveButton"
+
+# 保存成功のスナックバー確認
+- assertVisible:
+    text: "保存しました"

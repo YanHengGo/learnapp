@@ -1,0 +1,9 @@
+# ログアウト共通サブフロー
+# 子ども一覧 or ホーム画面から呼び出す
+appId: com.learn.app
+---
+- tapOn:
+    id: "logoutButton"
+- assertVisible: "ログアウトしますか？"
+- tapOn: "ログアウト"
+- assertVisible: "学習管理アプリ"

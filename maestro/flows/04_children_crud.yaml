@@ -1,0 +1,73 @@
+# ========================================
+# 04 子ども CRUD フロー
+# ========================================
+# テスト内容:
+#   1. 子どもを追加
+#   2. 追加した子どもを編集
+#   3. 編集した子どもを削除
+# ========================================
+appId: com.learn.app
+---
+
+- stopApp
+- launchApp
+- waitForAnimationToEnd
+
+# セッション切れの場合はログイン
+- runFlow:
+    when:
+      visible: "学習管理アプリ"
+    file: ../subflows/login.yaml
+
+- assertVisible: "子ども一覧"
+
+# --- 子どもを追加 ---
+- tapOn:
+    id: "addChildButton"
+
+# ダイアログ表示確認
+- assertVisible: "子どもを追加"
+- assertVisible: "名前"
+- assertVisible: "学年（任意）"
+
+# キャンセルできることを確認
+- tapOn: "キャンセル"
+- assertNotVisible: "子どもを追加"
+
+# 再度追加ダイアログ
+- tapOn:
+    id: "addChildButton"
+
+# 名前を入力して保存
+- tapOn: "名前"
+- inputText: "テスト太郎"
+- tapOn: "学年（任意）"
+- inputText: "小学2年生"
+- tapOn: "保存"
+
+# リストに追加されることを確認
+- assertVisible:
+    text: "テスト太郎"
+
+# --- 子どもを編集 ---
+- tapOn:
+    text: "編集"
+    below: "テスト太郎"
+
+- assertVisible: "子どもを編集"
+- clearTextField:
+    label: "名前"
+- inputText: "テスト二郎"
+- tapOn: "保存"
+
+- assertVisible:
+    text: "テスト二郎"
+- assertNotVisible: "テスト太郎"
+
+# --- 子どもを削除 ---
+- tapOn:
+    text: "削除"
+    below: "テスト二郎"
+
+- assertNotVisible:
+    text: "テスト二郎"

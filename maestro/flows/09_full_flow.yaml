@@ -1,0 +1,97 @@
+# ========================================
+# 09 E2E 全体フロー
+# ========================================
+# ユーザージャーニー:
+#   ログイン → 子ども選択 → タスク追加 → 日々の記録でチェック → 集計確認
+# ========================================
+appId: com.learn.app
+---
+
+- stopApp
+- launchApp
+- waitForAnimationToEnd
+
+# Step 1: セッション切れの場合はログイン
+- runFlow:
+    when:
+      visible: "学習管理アプリ"
+    file: ../subflows/login.yaml
+
+- assertVisible: "子ども一覧"
+
+# Step 2: 最初の子どもを選択
+- tapOn:
+    id: "childCard"
+    index: 0
+
+- assertVisible:
+    text: "日々"
+
+# Step 3: タスクを1件追加
+- tapOn: "タスク"
+- assertVisible: "タスク管理"
+
+- tapOn:
+    id: "addTaskButton"
+- tapOn: "タスク名"
+- inputText: "E2E テストタスク"
+- tapOn: "教科"
+- inputText: "テスト科目"
+- tapOn: "標準時間（分）"
+- inputText: "20"
+# 全曜日を選択
+- tapOn: "月"
+- tapOn: "火"
+- tapOn: "水"
+- tapOn: "木"
+- tapOn: "金"
+- tapOn: "土"
+- tapOn: "日"
+- hideKeyboard
+- tapOn: "保存"
+
+- assertVisible:
+    text: "E2E テストタスク"
+
+# Step 4: 日々の記録でタスクをチェック
+- tapOn: "日々"
+- assertVisible: "日々の記録"
+
+# タスクが表示されるまで待つ
+- assertVisible:
+    text: "E2E テストタスク"
+
+# チェックオン
+- tapOn:
+    type: "CheckBox"
+    index: 0
+
+# 時間入力
+- tapOn:
+    label: "分"
+    index: 0
+- clearTextField:
+    label: "分"
+    index: 0
+- inputText: "20"
+- hideKeyboard
+
+# 保存
+- tapOn:
+    id: "saveButton"
+- assertVisible:
+    text: "保存しました"
+
+# Step 5: 集計画面を確認
+- tapOn: "集計"
+- assertVisible:
+    text: "集計"
+
+# Step 6: 後片付け（追加したタスクをアーカイブ）
+- tapOn: "タスク"
+- assertVisible: "タスク管理"
+- tapOn:
+    text: "アーカイブ"
+    below: "E2E テストタスク"
+- assertNotVisible:
+    text: "E2E テストタスク"

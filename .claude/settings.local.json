@@ -1,7 +1,35 @@
 {
   "permissions": {
     "allow": [
-      "Skill(update-config)"
+      "Skill(update-config)",
+      "Bash(for dir:*)",
+      "Bash(do echo:*)",
+      "Read(//Users/yanheng/dev/learnapp/**)",
+      "Bash(done)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr:*)",
+      "Bash(chmod:*)",
+      "Bash(./maestro/run_all_tests.sh 2>&1)",
+      "Bash(curl -Ls \"https://get.maestro.mobile.dev\")",
+      "Bash(bash)",
+      "Bash(export PATH=\"$PATH\":\"$HOME/.maestro/bin\")",
+      "Bash(maestro --version)",
+      "Bash(./maestro/run_all_tests.sh)",
+      "Bash(maestro test:*)",
+      "Bash(xargs sed:*)",
+      "Bash(adb devices:*)",
+      "Bash(adb forward:*)",
+      "Bash(cat \"/Users/yanheng/.maestro/tests/2026-04-14_064317/commands-\\(03_children_list.yaml\\).json\")",
+      "Bash(python3 -m json.tool)",
+      "Bash(maestro hierarchy:*)",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(python3 -c \":*)",
+      "Bash(./gradlew assembleDebug installDebug)",
+      "Bash(./gradlew :feature:tasks:compileDebugKotlin)",
+      "Bash(grep -v \"^$\")"
     ]
   }
 }

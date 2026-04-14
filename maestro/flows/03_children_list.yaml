@@ -1,0 +1,30 @@
+# ========================================
+# 03 子ども一覧フロー（ログイン済み前提）
+# ========================================
+# テスト内容:
+#   1. 子ども一覧が表示される
+#   2. 子どもカードをタップ → HomeScreen へ遷移
+#   3. バック操作 → 子ども一覧に戻る
+# ========================================
+appId: com.learn.app
+---
+
+- stopApp
+- launchApp
+- waitForAnimationToEnd
+
+# 子ども一覧の表示確認
+- assertVisible: "子ども一覧"
+
+# 最初の子ども名をタップして HomeScreen へ遷移
+- tapOn: "長男"
+- waitForAnimationToEnd
+
+# BottomNav が表示されること（HomeScreen に遷移した証拠）
+- assertVisible: "日々"
+- assertVisible: "タスク"
+- assertVisible: "集計"
+
+# バックで子ども一覧へ戻る
+- back
+- assertVisible: "子ども一覧"

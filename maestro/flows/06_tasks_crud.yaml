@@ -1,0 +1,97 @@
+# ========================================
+# 06 タスク管理 CRUD フロー
+# ========================================
+# テスト内容:
+#   1. タスク一覧表示
+#   2. タスク追加（必須項目のみ）
+#   3. タスク編集
+#   4. タスクアーカイブ
+# ========================================
+appId: com.learn.app
+---
+
+- stopApp
+- launchApp
+- waitForAnimationToEnd
+
+# セッション切れの場合はログイン
+- runFlow:
+    when:
+      visible: "学習管理アプリ"
+    file: ../subflows/login.yaml
+
+- assertVisible: "子ども一覧"
+
+# 最初の子どもを選択
+- tapOn:
+    id: "childCard"
+    index: 0
+
+- assertVisible:
+    text: "日々"
+
+# タスクタブへ移動
+- tapOn: "タスク"
+- assertVisible:
+    text: "タスク管理"
+
+# --- タスクを追加 ---
+- tapOn:
+    id: "addTaskButton"
+
+# ダイアログ表示確認
+- assertVisible: "タスクを追加"
+
+# キャンセルできることを確認
+- tapOn: "キャンセル"
+- assertNotVisible: "タスクを追加"
+
+# 再度追加ダイアログ
+- tapOn:
+    id: "addTaskButton"
+
+# タスク名入力
+- tapOn: "タスク名"
+- inputText: "テスト算数"
+
+# 教科入力
+- tapOn: "教科"
+- inputText: "算数"
+
+# 標準時間入力
+- tapOn: "標準時間（分）"
+- inputText: "30"
+
+# 曜日を選択（月・水・金）
+- tapOn: "月"
+- tapOn: "水"
+- tapOn: "金"
+
+- hideKeyboard
+- tapOn: "保存"
+
+# リストに追加されることを確認
+- assertVisible:
+    text: "テスト算数"
+
+# --- タスクを編集 ---
+- tapOn:
+    text: "編集"
+    below: "テスト算数"
+
+- assertVisible: "タスクを編集"
+- clearTextField:
+    label: "タスク名"
+- inputText: "テスト算数（改）"
+- tapOn: "保存"
+
+- assertVisible:
+    text: "テスト算数（改）"
+
+# --- タスクをアーカイブ ---
+- tapOn:
+    text: "アーカイブ"
+    below: "テスト算数（改）"
+
+- assertNotVisible:
+    text: "テスト算数（改）"

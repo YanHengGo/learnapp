@@ -1,0 +1,56 @@
+# ========================================
+# 01 認証 - ログインフロー
+# ========================================
+# テスト内容:
+#   1. 正常ログイン → 子ども一覧画面へ遷移
+#   2. 空フォームでは送信できない（ボタン非活性）
+#   3. 不正なパスワードでエラーメッセージ表示
+# ========================================
+appId: com.learn.app
+---
+
+- stopApp
+- launchApp
+- waitForAnimationToEnd
+
+# すでにログイン済みの場合はログアウトして認証画面へ
+- runFlow:
+    when:
+      visible: "子ども一覧"
+    file: ../subflows/logout.yaml
+
+- assertVisible: "学習管理アプリ"
+- assertVisible: "ログイン"
+
+# --- ケース1: 正常ログイン ---
+- tapOn: "メールアドレス"
+- inputText: ${TEST_EMAIL}
+- tapOn: "パスワード"
+- inputText: ${TEST_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: "authSubmitButton"
+
+# 子ども一覧画面へ遷移することを確認
+- assertVisible: "子ども一覧"
+
+# --- ケース2: ログアウト後に空フォームテスト ---
+- runFlow: ../subflows/logout.yaml
+
+# 何も入力せずにボタンが非活性かを確認（画面遷移しない）
+- tapOn:
+    id: "authSubmitButton"
+- assertVisible: "学習管理アプリ"
+- assertNotVisible: "子ども一覧"
+
+# --- ケース3: 不正パスワードでエラー表示 ---
+- tapOn: "メールアドレス"
+- inputText: ${TEST_EMAIL}
+- tapOn: "パスワード"
+- inputText: "wrongpassword"
+- hideKeyboard
+- tapOn:
+    id: "authSubmitButton"
+# エラーメッセージが表示される（画面遷移しない）
+- assertNotVisible: "子ども一覧"
+- assertVisible: "学習管理アプリ"

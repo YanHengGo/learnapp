@@ -1,0 +1,50 @@
+# ========================================
+# 05 ホーム BottomNavigation フロー（ログイン済み前提）
+# ========================================
+# テスト内容:
+#   1. 日々 / タスク / 集計 タブ切り替え
+#   2. 各タブの TopAppBar タイトル表示確認
+#   3. 子ども切り替えダイアログ
+#   4. ログアウト確認ダイアログのキャンセル
+# ========================================
+appId: com.learn.app
+---
+
+- stopApp
+- launchApp
+- waitForAnimationToEnd
+
+# 子ども一覧から最初の子どもを選択して HomeScreen へ
+- assertVisible: "子ども一覧"
+- tapOn: "長男"
+- waitForAnimationToEnd
+
+# --- タブ: 日々（デフォルト）---
+- assertVisible: "日々"
+- assertVisible: "日々の記録"
+
+# --- タブ: タスク ---
+- tapOn: "タスク"
+- assertVisible: "タスク管理"
+
+# --- タブ: 集計 ---
+- tapOn: "集計"
+- assertVisible: "集計"
+
+# --- タブ: 日々 に戻る ---
+- tapOn: "日々"
+- assertVisible: "日々の記録"
+
+# --- 子ども切り替えダイアログ ---
+- tapOn: "子どもを切り替え"
+- assertVisible: "子どもを切り替え"
+# キャンセルでダイアログが閉じることを確認（キャンセルボタンの消滅で判定）
+- tapOn: "キャンセル"
+- assertNotVisible: "キャンセル"
+
+# --- ログアウト確認ダイアログ（キャンセル）---
+- tapOn: "ログアウト"
+- assertVisible: "ログアウトしますか？"
+- tapOn: "キャンセル"
+- assertNotVisible: "ログアウトしますか？"
+- assertVisible: "日々"

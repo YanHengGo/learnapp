@@ -1,0 +1,51 @@
+# ========================================
+# 07 日々の記録フロー
+# ========================================
+# テスト内容:
+#   1. 日々の記録画面表示
+#   2. 日付ナビゲーション（前の日・次の日）
+#   3. タスクのチェックオン・オフ
+#   4. 学習時間の入力と保存
+# NOTE: タスクが登録済みであることが前提
+# ========================================
+appId: com.learn.app
+---
+
+- stopApp
+- launchApp
+- waitForAnimationToEnd
+
+# セッション切れの場合はログイン
+- runFlow:
+    when:
+      visible: "学習管理アプリ"
+    file: ../subflows/login.yaml
+
+- assertVisible: "子ども一覧"
+
+# 最初の子どもを選択
+- tapOn:
+    id: "childCard"
+    index: 0
+
+- assertVisible:
+    text: "日々"
+
+# 日々タブはデフォルト表示
+- assertVisible: "日々の記録"
+
+# --- 日付ナビゲーション ---
+- tapOn:
+    text: "前の日"
+- waitForAnimationToEnd
+
+- tapOn:
+    text: "次の日"
+- waitForAnimationToEnd
+
+# --- タスクが存在する場合のテスト ---
+# タスクがない場合は "この日のタスクはありません" が表示される
+- runFlow:
+    file: ../subflows/daily_with_tasks.yaml
+    when:
+      notVisible: "この日のタスクはありません"
