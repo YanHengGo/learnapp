@@ -91,6 +91,98 @@ cd learnapp
 | GET | `/api/v1/children/{childId}/calendar-summary` | カレンダーサマリー取得 |
 | GET | `/api/v1/children/{childId}/summary` | 学習サマリー取得 |
 
+## テスト
+
+### Compose UI テスト
+
+各 feature モジュールに Jetpack Compose の instrumented テストを実装しています。モック不要の `internal` Composable 関数に対して UI の表示・操作をテストします。
+
+**対象モジュール**
+
+| モジュール | テストファイル |
+|---|---|
+| feature:auth | `AuthScreenTest.kt` |
+| feature:children | `ChildrenScreenTest.kt` |
+| feature:home | `HomeScreenTest.kt` |
+| feature:splash | `SplashScreenTest.kt` |
+| feature:tasks | `TasksScreenTest.kt` |
+| feature:daily | `DailyScreenTest.kt` |
+| feature:summary | `SummaryScreenTest.kt` |
+
+**実行方法**
+
+```bash
+# 全モジュールのUIテストを実行（接続済みデバイス/エミュレーターが必要）
+./gradlew connectedAndroidTest
+
+# 特定モジュールのみ
+./gradlew :feature:tasks:connectedAndroidTest
+```
+
+---
+
+### Maestro テスト（E2E）
+
+[Maestro](https://maestro.mobile.dev/) を使ったE2Eテストです。実機またはエミュレーター上で実際のアプリを操作して動作確認を行います。
+
+**前提条件**
+
+```bash
+# Maestro インストール
+curl -Ls "https://get.maestro.mobile.dev" | bash
+
+# バージョン確認
+maestro --version
+```
+
+**テスト用アカウント設定**
+
+`maestro/.env` にテスト用の認証情報を設定してください：
+
+```
+TEST_EMAIL=your-test@example.com
+TEST_PASSWORD=yourpassword
+```
+
+**全テスト一括実行**
+
+```bash
+# デフォルト（テスト間 5 秒待機）
+./maestro/run_all_tests.sh
+
+# 待機時間を変更
+./maestro/run_all_tests.sh --wait 10
+
+# 特定フローをスキップ（例: フロー 02 をスキップ）
+./maestro/run_all_tests.sh --skip 02
+
+# ドライラン（実行せずにコマンド確認）
+./maestro/run_all_tests.sh --dry-run
+```
+
+**個別フロー実行**
+
+```bash
+maestro test maestro/flows/01_auth_login.yaml --env TEST_EMAIL=xxx --env TEST_PASSWORD=yyy
+```
+
+**フロー一覧**
+
+| ファイル | 内容 | ログイン前提 |
+|---|---|---|
+| `01_auth_login.yaml` | ログイン / ログアウト | 不要 |
+| `02_auth_signup.yaml` | 新規サインアップ | 不要 |
+| `03_children_list.yaml` | 子ども一覧・選択・戻る | 必要 |
+| `04_children_crud.yaml` | 子どもの追加・編集・削除 | 必要 |
+| `05_home_navigation.yaml` | BottomNav タブ切り替え・切り替えダイアログ | 必要 |
+| `06_tasks_crud.yaml` | タスクの追加・編集・アーカイブ | 必要 |
+| `07_daily_record.yaml` | 日々の記録のチェック・時間入力・保存 | 必要 |
+| `09_full_flow.yaml` | ログイン〜タスク追加〜記録〜集計の全体フロー | 不要（条件付きログイン）|
+
+テスト結果（JUnit XML）は `maestro/results/` に出力されます（`.gitignore` 対象）。
+
+---
+
 ## CI/CD
 
 PR作成・更新時に [Claude Code Action](https://github.com/anthropics/claude-code-action) による自動コードレビューが実行されます。
