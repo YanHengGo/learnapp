@@ -20,6 +20,9 @@ local.properties
 
 # UIテスト スクリーンショット（git 管理対象外）
 /screenshots/
+
+# Maestro テスト結果
+maestro/results/
 .externalNativeBuild/
 .cxx/
 

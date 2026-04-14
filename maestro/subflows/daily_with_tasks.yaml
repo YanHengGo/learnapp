@@ -23,4 +23,3 @@ appId: com.learn.app
 # 保存成功のスナックバー確認
 - assertVisible:
     text: "保存しました"
-    timeout: 10000

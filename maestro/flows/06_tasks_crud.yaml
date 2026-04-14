@@ -10,29 +10,34 @@
 appId: com.learn.app
 ---
 
-- launchApp:
-    clearState: true
+- stopApp
+- launchApp
+- waitForAnimationToEnd
 
-- runFlow: ../subflows/login.yaml
+# セッション切れの場合はログイン
+- runFlow:
+    when:
+      visible: "学習管理アプリ"
+    file: ../subflows/login.yaml
+
+- assertVisible: "子ども一覧"
 
 # 最初の子どもを選択
 - tapOn:
+    id: "childCard"
     index: 0
-    below: "子ども一覧"
 
 - assertVisible:
     text: "日々"
-    timeout: 10000
 
 # タスクタブへ移動
 - tapOn: "タスク"
 - assertVisible:
     text: "タスク管理"
-    timeout: 5000
 
 # --- タスクを追加 ---
 - tapOn:
-    description: "タスクを追加"
+    id: "addTaskButton"
 
 # ダイアログ表示確認
 - assertVisible: "タスクを追加"
@@ -43,7 +48,7 @@ appId: com.learn.app
 
 # 再度追加ダイアログ
 - tapOn:
-    description: "タスクを追加"
+    id: "addTaskButton"
 
 # タスク名入力
 - tapOn: "タスク名"
@@ -68,11 +73,10 @@ appId: com.learn.app
 # リストに追加されることを確認
 - assertVisible:
     text: "テスト算数"
-    timeout: 10000
 
 # --- タスクを編集 ---
 - tapOn:
-    description: "編集"
+    text: "編集"
     below: "テスト算数"
 
 - assertVisible: "タスクを編集"
@@ -83,13 +87,11 @@ appId: com.learn.app
 
 - assertVisible:
     text: "テスト算数（改）"
-    timeout: 10000
 
 # --- タスクをアーカイブ ---
 - tapOn:
-    description: "アーカイブ"
+    text: "アーカイブ"
     below: "テスト算数（改）"
 
 - assertNotVisible:
     text: "テスト算数（改）"
-    timeout: 5000

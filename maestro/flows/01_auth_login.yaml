@@ -9,41 +9,35 @@
 appId: com.learn.app
 ---
 
-# --- ケース1: 正常ログイン ---
-- launchApp:
-    clearState: true
+- stopApp
+- launchApp
+- waitForAnimationToEnd
+
+# すでにログイン済みの場合はログアウトして認証画面へ
+- runFlow:
+    when:
+      visible: "子ども一覧"
+    file: ../subflows/logout.yaml
 
 - assertVisible: "学習管理アプリ"
 - assertVisible: "ログイン"
 
-# メールアドレス入力
+# --- ケース1: 正常ログイン ---
 - tapOn: "メールアドレス"
 - inputText: ${TEST_EMAIL}
-
-# パスワード入力
 - tapOn: "パスワード"
 - inputText: ${TEST_PASSWORD}
 - hideKeyboard
-
-# ログインボタンタップ
 - tapOn:
     id: "authSubmitButton"
 
 # 子ども一覧画面へ遷移することを確認
-- assertVisible:
-    text: "子ども一覧"
-    timeout: 10000
+- assertVisible: "子ども一覧"
 
-# --- ケース2: ログアウトしてから空フォームテスト ---
-- tapOn:
-    description: "ログアウト"
-- assertVisible: "ログアウトしますか？"
-- tapOn: "ログアウト"
-- assertVisible:
-    text: "学習管理アプリ"
-    timeout: 5000
+# --- ケース2: ログアウト後に空フォームテスト ---
+- runFlow: ../subflows/logout.yaml
 
-# 何も入力せずにボタンが非活性かを確認（タップしてもエラーなし・画面遷移なし）
+# 何も入力せずにボタンが非活性かを確認（画面遷移しない）
 - tapOn:
     id: "authSubmitButton"
 - assertVisible: "学習管理アプリ"
@@ -58,7 +52,5 @@ appId: com.learn.app
 - tapOn:
     id: "authSubmitButton"
 # エラーメッセージが表示される（画面遷移しない）
-- assertNotVisible:
-    text: "子ども一覧"
-    timeout: 5000
+- assertNotVisible: "子ども一覧"
 - assertVisible: "学習管理アプリ"

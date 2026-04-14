@@ -40,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -104,14 +105,20 @@ internal fun ChildrenContent(
             TopAppBar(
                 title = { Text("子ども一覧") },
                 actions = {
-                    IconButton(onClick = onShowLogoutConfirm) {
+                    IconButton(
+                        onClick = onShowLogoutConfirm,
+                        modifier = Modifier.testTag("logoutButton"),
+                    ) {
                         Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "ログアウト")
                     }
                 },
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onShowAddDialog) {
+            FloatingActionButton(
+                onClick = onShowAddDialog,
+                modifier = Modifier.testTag("addChildButton"),
+            ) {
                 Icon(Icons.Filled.Add, contentDescription = "子どもを追加")
             }
         },
@@ -210,7 +217,9 @@ private fun ChildCard(
 ) {
     Card(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("childCard"),
         colors = CardDefaults.cardColors(
             containerColor = if (child.isActive) {
                 MaterialTheme.colorScheme.primaryContainer

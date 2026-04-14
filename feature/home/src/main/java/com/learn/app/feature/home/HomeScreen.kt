@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -158,7 +159,10 @@ internal fun HomeContent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = onShowLogoutConfirm) {
+                    IconButton(
+                        onClick = onShowLogoutConfirm,
+                        modifier = Modifier.testTag("logoutButton"),
+                    ) {
                         Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "ログアウト")
                     }
                 },

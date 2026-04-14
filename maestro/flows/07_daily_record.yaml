@@ -11,30 +11,36 @@
 appId: com.learn.app
 ---
 
-- launchApp:
-    clearState: true
+- stopApp
+- launchApp
+- waitForAnimationToEnd
 
-- runFlow: ../subflows/login.yaml
+# セッション切れの場合はログイン
+- runFlow:
+    when:
+      visible: "学習管理アプリ"
+    file: ../subflows/login.yaml
+
+- assertVisible: "子ども一覧"
 
 # 最初の子どもを選択
 - tapOn:
+    id: "childCard"
     index: 0
-    below: "子ども一覧"
 
 - assertVisible:
     text: "日々"
-    timeout: 10000
 
 # 日々タブはデフォルト表示
 - assertVisible: "日々の記録"
 
 # --- 日付ナビゲーション ---
 - tapOn:
-    description: "前の日"
+    text: "前の日"
 - waitForAnimationToEnd
 
 - tapOn:
-    description: "次の日"
+    text: "次の日"
 - waitForAnimationToEnd
 
 # --- タスクが存在する場合のテスト ---

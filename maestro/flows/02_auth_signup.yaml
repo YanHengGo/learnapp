@@ -10,8 +10,15 @@
 appId: com.learn.app
 ---
 
-- launchApp:
-    clearState: true
+- stopApp
+- launchApp
+- waitForAnimationToEnd
+
+# すでにログイン済みの場合はログアウト
+- runFlow:
+    when:
+      visible: "子ども一覧"
+    file: ../subflows/logout.yaml
 
 - assertVisible: "学習管理アプリ"
 - assertVisible: "ログイン"

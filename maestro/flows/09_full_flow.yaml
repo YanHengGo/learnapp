@@ -7,27 +7,32 @@
 appId: com.learn.app
 ---
 
-- launchApp:
-    clearState: true
+- stopApp
+- launchApp
+- waitForAnimationToEnd
 
-# Step 1: ログイン
-- runFlow: ../subflows/login.yaml
+# Step 1: セッション切れの場合はログイン
+- runFlow:
+    when:
+      visible: "学習管理アプリ"
+    file: ../subflows/login.yaml
+
+- assertVisible: "子ども一覧"
 
 # Step 2: 最初の子どもを選択
 - tapOn:
+    id: "childCard"
     index: 0
-    below: "子ども一覧"
 
 - assertVisible:
     text: "日々"
-    timeout: 10000
 
 # Step 3: タスクを1件追加
 - tapOn: "タスク"
 - assertVisible: "タスク管理"
 
 - tapOn:
-    description: "タスクを追加"
+    id: "addTaskButton"
 - tapOn: "タスク名"
 - inputText: "E2E テストタスク"
 - tapOn: "教科"
@@ -47,7 +52,6 @@ appId: com.learn.app
 
 - assertVisible:
     text: "E2E テストタスク"
-    timeout: 10000
 
 # Step 4: 日々の記録でタスクをチェック
 - tapOn: "日々"
@@ -56,7 +60,6 @@ appId: com.learn.app
 # タスクが表示されるまで待つ
 - assertVisible:
     text: "E2E テストタスク"
-    timeout: 5000
 
 # チェックオン
 - tapOn:
@@ -78,20 +81,17 @@ appId: com.learn.app
     id: "saveButton"
 - assertVisible:
     text: "保存しました"
-    timeout: 10000
 
 # Step 5: 集計画面を確認
 - tapOn: "集計"
 - assertVisible:
     text: "集計"
-    timeout: 5000
 
 # Step 6: 後片付け（追加したタスクをアーカイブ）
 - tapOn: "タスク"
 - assertVisible: "タスク管理"
 - tapOn:
-    description: "アーカイブ"
+    text: "アーカイブ"
     below: "E2E テストタスク"
 - assertNotVisible:
     text: "E2E テストタスク"
-    timeout: 5000

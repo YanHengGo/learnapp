@@ -9,14 +9,21 @@
 appId: com.learn.app
 ---
 
-- launchApp:
-    clearState: true
+- stopApp
+- launchApp
+- waitForAnimationToEnd
 
-- runFlow: ../subflows/login.yaml
+# セッション切れの場合はログイン
+- runFlow:
+    when:
+      visible: "学習管理アプリ"
+    file: ../subflows/login.yaml
+
+- assertVisible: "子ども一覧"
 
 # --- 子どもを追加 ---
 - tapOn:
-    description: "子どもを追加"
+    id: "addChildButton"
 
 # ダイアログ表示確認
 - assertVisible: "子どもを追加"
@@ -29,7 +36,7 @@ appId: com.learn.app
 
 # 再度追加ダイアログ
 - tapOn:
-    description: "子どもを追加"
+    id: "addChildButton"
 
 # 名前を入力して保存
 - tapOn: "名前"
@@ -41,11 +48,10 @@ appId: com.learn.app
 # リストに追加されることを確認
 - assertVisible:
     text: "テスト太郎"
-    timeout: 10000
 
 # --- 子どもを編集 ---
 - tapOn:
-    description: "編集"
+    text: "編集"
     below: "テスト太郎"
 
 - assertVisible: "子どもを編集"
@@ -56,14 +62,12 @@ appId: com.learn.app
 
 - assertVisible:
     text: "テスト二郎"
-    timeout: 10000
 - assertNotVisible: "テスト太郎"
 
 # --- 子どもを削除 ---
 - tapOn:
-    description: "削除"
+    text: "削除"
     below: "テスト二郎"
 
 - assertNotVisible:
     text: "テスト二郎"
-    timeout: 5000

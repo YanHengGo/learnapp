@@ -4,8 +4,7 @@ appId: com.learn.app
 - runFlow: login.yaml
 # 子ども一覧の最初のカードをタップ
 - tapOn:
+    id: "childCard"
     index: 0
-    below: "子ども一覧"
 - assertVisible:
     text: "日々"
-    timeout: 10000

@@ -13,4 +13,3 @@ appId: com.learn.app
     id: "authSubmitButton"
 - assertVisible:
     text: "子ども一覧"
-    timeout: 10000
