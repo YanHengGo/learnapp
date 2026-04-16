@@ -12,7 +12,10 @@ import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +28,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,6 +52,7 @@ fun HomeScreen(
     onBack: () -> Unit,
     onChildSwitch: (newChildId: String) -> Unit,
     onLoggedOut: () -> Unit,
+    onPrivacyPolicy: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -90,6 +97,7 @@ fun HomeScreen(
         },
         onDismissLogoutConfirm = viewModel::onDismissLogoutConfirm,
         onLogout = { viewModel.onLogout(onLoggedOut) },
+        onPrivacyPolicy = onPrivacyPolicy,
     ) { paddingValues ->
         NavHost(
             navController = innerNavController,
@@ -147,8 +155,10 @@ internal fun HomeContent(
     onChildSelect: (String) -> Unit,
     onDismissLogoutConfirm: () -> Unit,
     onLogout: () -> Unit,
+    onPrivacyPolicy: () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
+    var menuExpanded by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -164,6 +174,21 @@ internal fun HomeContent(
                         modifier = Modifier.testTag("logoutButton"),
                     ) {
                         Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "ログアウト")
+                    }
+                    IconButton(onClick = { menuExpanded = true }) {
+                        Icon(Icons.Filled.MoreVert, contentDescription = "メニュー")
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("プライバシーポリシー") },
+                            onClick = {
+                                menuExpanded = false
+                                onPrivacyPolicy()
+                            },
+                        )
                     }
                 },
             )

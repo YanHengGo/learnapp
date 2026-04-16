@@ -17,10 +17,13 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -37,7 +40,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -51,12 +56,14 @@ import com.learn.app.core.model.Child
 fun ChildrenScreen(
     onChildSelected: (String) -> Unit,
     onLoggedOut: () -> Unit,
+    onPrivacyPolicy: () -> Unit = {},
     viewModel: ChildrenViewModel = hiltViewModel(),
 ) {
     ChildrenContent(
         uiState = viewModel.uiState.collectAsState().value,
         onChildSelected = onChildSelected,
         onLoggedOut = onLoggedOut,
+        onPrivacyPolicy = onPrivacyPolicy,
         onShowAddDialog = viewModel::onShowAddDialog,
         onShowEditDialog = viewModel::onShowEditDialog,
         onDeleteChild = viewModel::onDeleteChild,
@@ -90,8 +97,10 @@ internal fun ChildrenContent(
     onSaveChild: () -> Unit,
     onErrorDismiss: () -> Unit,
     onLoadChildren: () -> Unit,
+    onPrivacyPolicy: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    var menuExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let {
@@ -110,6 +119,21 @@ internal fun ChildrenContent(
                         modifier = Modifier.testTag("logoutButton"),
                     ) {
                         Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "ログアウト")
+                    }
+                    IconButton(onClick = { menuExpanded = true }) {
+                        Icon(Icons.Filled.MoreVert, contentDescription = "メニュー")
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("プライバシーポリシー") },
+                            onClick = {
+                                menuExpanded = false
+                                onPrivacyPolicy()
+                            },
+                        )
                     }
                 },
             )

@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.learn.app.feature.auth.AuthScreen
+import com.learn.app.feature.auth.PrivacyPolicyScreen
 import com.learn.app.feature.children.ChildrenScreen
 import com.learn.app.feature.home.HomeScreen
 import com.learn.app.feature.splash.SplashScreen
@@ -34,7 +35,15 @@ fun NavGraph() {
                     navController.navigate("children") {
                         popUpTo("auth") { inclusive = true }
                     }
-                }
+                },
+                onPrivacyPolicy = {
+                    navController.navigate("privacy_policy")
+                },
+            )
+        }
+        composable("privacy_policy") {
+            PrivacyPolicyScreen(
+                onBack = { navController.popBackStack() },
             )
         }
         composable("children") {
@@ -49,6 +58,9 @@ fun NavGraph() {
                     navController.navigate("auth") {
                         popUpTo(0) { inclusive = true }
                     }
+                },
+                onPrivacyPolicy = {
+                    navController.navigate("privacy_policy")
                 },
             )
         }
@@ -66,6 +78,9 @@ fun NavGraph() {
                     navController.navigate("auth") {
                         popUpTo(0) { inclusive = true }
                     }
+                },
+                onPrivacyPolicy = {
+                    navController.navigate("privacy_policy")
                 },
             )
         }

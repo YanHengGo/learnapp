@@ -47,6 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun AuthScreen(
     onAuthSuccess: () -> Unit,
+    onPrivacyPolicy: () -> Unit = {},
     viewModel: AuthViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -62,6 +63,7 @@ fun AuthScreen(
             onPasswordChange = viewModel::onPasswordChange,
             onModeToggle = viewModel::onModeToggle,
             onSubmit = viewModel::onSubmit,
+            onPrivacyPolicy = onPrivacyPolicy,
         )
 
         if (uiState.isLoading) {
@@ -77,6 +79,7 @@ internal fun AuthContent(
     onPasswordChange: (String) -> Unit,
     onModeToggle: () -> Unit,
     onSubmit: () -> Unit,
+    onPrivacyPolicy: () -> Unit = {},
 ) {
     val focusManager = LocalFocusManager.current
     var passwordVisible by remember { mutableStateOf(false) }
@@ -204,6 +207,17 @@ internal fun AuthContent(
                     "すでにアカウントをお持ちの方はこちら"
                 },
             )
+        }
+
+        // 新規登録モード時のみプライバシーポリシーリンクを表示
+        if (uiState.mode == AuthMode.SIGNUP) {
+            TextButton(onClick = onPrivacyPolicy) {
+                Text(
+                    text = "プライバシーポリシーを確認する",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }
