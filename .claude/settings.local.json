@@ -33,7 +33,8 @@
       "Bash(npx reg-suit:*)",
       "Bash(npx reg-cli:*)",
       "Bash(./gradlew :feature:auth:compileDebugKotlin :app:compileDebugKotlin)",
-      "Bash(./gradlew :feature:children:compileDebugKotlin :feature:home:compileDebugKotlin :app:compileDebugKotlin)"
+      "Bash(./gradlew :feature:children:compileDebugKotlin :feature:home:compileDebugKotlin :app:compileDebugKotlin)",
+      "Bash(./gradlew :feature:children:compileDebugKotlin)"
     ]
   }
 }
