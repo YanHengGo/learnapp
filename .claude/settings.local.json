@@ -29,7 +29,9 @@
       "Bash(python3 -c \":*)",
       "Bash(./gradlew assembleDebug installDebug)",
       "Bash(./gradlew :feature:tasks:compileDebugKotlin)",
-      "Bash(grep -v \"^$\")"
+      "Bash(grep -v \"^$\")",
+      "Bash(npx reg-suit:*)",
+      "Bash(npx reg-cli:*)"
     ]
   }
 }
