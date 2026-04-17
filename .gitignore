@@ -25,3 +25,8 @@ local.properties
 maestro/results/
 .externalNativeBuild/
 .cxx/
+
+# Keystore（絶対にコミットしない）
+*.jks
+*.keystore
+keystore.properties
