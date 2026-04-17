@@ -12,7 +12,7 @@ Play Store 公開のための署名・難読化・最適化の設定。
 
 ```bash
 keytool -genkey -v \
-  -keystore learnapp-release.jks \
+  -keystore ~/.android/learnapp-release.jks \
   -alias learnapp \
   -keyalg RSA \
   -keysize 2048 \
@@ -24,7 +24,7 @@ keytool -genkey -v \
 | ファイル名 | `learnapp-release.jks` |
 | alias | `learnapp` |
 | 有効期限 | 10000日（約27年）※ Play Store 要件: 2033年10月22日以降まで有効であること |
-| 保存場所 | プロジェクト外（例: `~/.android/learnapp-release.jks`）|
+| 保存場所 | `~/.android/learnapp-release.jks` |
 
 > **重要**: `.jks` ファイルは絶対に Git にコミットしない。紛失すると同じ applicationId でアップデート不可。
 
@@ -35,7 +35,7 @@ keytool -genkey -v \
 ### keystore.properties（プロジェクトルート）
 
 ```properties
-storeFile=/Users/yourname/.android/learnapp-release.jks
+storeFile=/Users/yanheng/.android/learnapp-release.jks
 storePassword=YOUR_STORE_PASSWORD
 keyAlias=learnapp
 keyPassword=YOUR_KEY_PASSWORD
@@ -183,7 +183,7 @@ app/build/outputs/apk/release/app-release.apk
 | 項目 | 現在値 | ルール |
 |---|---|---|
 | `versionCode` | 1 | リリースごとに +1（整数、戻せない）|
-| `versionName` | "1.0" | セマンティックバージョニング（例: "1.0.1", "1.1.0"）|
+| `versionName` | "1.0.0" | セマンティックバージョニング（例: "1.0.1", "1.1.0"）|
 
 ---
 
