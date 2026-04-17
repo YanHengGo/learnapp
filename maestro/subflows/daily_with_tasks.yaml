@@ -1,5 +1,5 @@
 # タスクが存在する日の記録操作サブフロー
-appId: com.learn.app
+appId: com.yanheng.learnapp
 ---
 # 最初のタスクの Checkbox をタップ（完了にする）
 - tapOn:

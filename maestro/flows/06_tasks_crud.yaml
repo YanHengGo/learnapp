@@ -7,7 +7,7 @@
 #   3. タスク編集
 #   4. タスクアーカイブ
 # ========================================
-appId: com.learn.app
+appId: com.yanheng.learnapp
 ---
 
 - stopApp
