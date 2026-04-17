@@ -7,7 +7,7 @@
 #   3. 子ども切り替えダイアログ
 #   4. ログアウト確認ダイアログのキャンセル
 # ========================================
-appId: com.learn.app
+appId: com.yanheng.learnapp
 ---
 
 - stopApp

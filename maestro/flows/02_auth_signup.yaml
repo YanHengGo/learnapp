@@ -7,7 +7,7 @@
 # NOTE: 実際の登録はサーバー側にデータが残るため
 #       手動テストまたはテスト用ダミーアカウントで実施推奨
 # ========================================
-appId: com.learn.app
+appId: com.yanheng.learnapp
 ---
 
 - stopApp

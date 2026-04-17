@@ -8,7 +8,7 @@
 #   4. 学習時間の入力と保存
 # NOTE: タスクが登録済みであることが前提
 # ========================================
-appId: com.learn.app
+appId: com.yanheng.learnapp
 ---
 
 - stopApp

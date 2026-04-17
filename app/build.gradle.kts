@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.learn.app"
+        applicationId = "com.yanheng.learnapp"
         minSdk = 28
         targetSdk = 36
         versionCode = 1

@@ -6,7 +6,7 @@
 #   2. 子どもカードをタップ → HomeScreen へ遷移
 #   3. バック操作 → 子ども一覧に戻る
 # ========================================
-appId: com.learn.app
+appId: com.yanheng.learnapp
 ---
 
 - stopApp

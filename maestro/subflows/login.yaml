@@ -1,7 +1,7 @@
 # ログイン共通サブフロー
 # 他のフローから runFlow で呼び出す
 # 前提: clearState済みでアプリ起動済み
-appId: com.learn.app
+appId: com.yanheng.learnapp
 ---
 - assertVisible: "学習管理アプリ"
 - tapOn: "メールアドレス"
