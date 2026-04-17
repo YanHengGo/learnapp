@@ -39,7 +39,21 @@
       "Bash(mv bottom.md design_home_navigation.md)",
       "Bash(mv core_api.md design_core_package.md)",
       "Bash(mv plan.md plan_privacy_policy.md)",
-      "Bash(mv remain_task.md tasks_backlog.md)"
+      "Bash(mv remain_task.md tasks_backlog.md)",
+      "Read(//Users/yanheng/dev/learnapp/feature/$f/**)",
+      "Bash(echo \"$f: tooling OK\")",
+      "Bash(echo \"$f: tooling MISSING\")",
+      "Bash(git checkout:*)",
+      "Bash(for module:*)",
+      "Bash(sed -i '' 's/    debugImplementation\\(libs.androidx.compose.ui.test.manifest\\)/    debugImplementation\\(libs.androidx.compose.ui.tooling\\)\\\\n    debugImplementation\\(libs.androidx.compose.ui.test.manifest\\)/' /Users/yanheng/dev/learnapp/feature/$module/build.gradle.kts)",
+      "Bash(echo \"$module: done\")",
+      "Bash(echo 'NOT FOUND' echo --- find /Users/yanheng/dev/learnapp/core/model -name *.kt)",
+      "Bash(xargs ls:*)",
+      "Bash(./gradlew :feature:summary:compileDebugKotlin)",
+      "Bash(./gradlew :feature:auth:compileDebugKotlin :feature:splash:compileDebugKotlin :feature:home:compileDebugKotlin :feature:tasks:compileDebugKotlin :feature:daily:compileDebugKotlin)",
+      "Bash(./gradlew :feature:home:compileDebugKotlin)",
+      "Bash(./gradlew :feature:home:compileDebugKotlin --info)",
+      "Bash(./gradlew :feature:auth:compileDebugKotlin :feature:splash:compileDebugKotlin :feature:home:compileDebugKotlin :feature:tasks:compileDebugKotlin :feature:daily:compileDebugKotlin :feature:summary:compileDebugKotlin)"
     ]
   }
 }
