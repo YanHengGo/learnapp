@@ -34,7 +34,12 @@
       "Bash(npx reg-cli:*)",
       "Bash(./gradlew :feature:auth:compileDebugKotlin :app:compileDebugKotlin)",
       "Bash(./gradlew :feature:children:compileDebugKotlin :feature:home:compileDebugKotlin :app:compileDebugKotlin)",
-      "Bash(./gradlew :feature:children:compileDebugKotlin)"
+      "Bash(./gradlew :feature:children:compileDebugKotlin)",
+      "Bash(mv api.md api_reference.md)",
+      "Bash(mv bottom.md design_home_navigation.md)",
+      "Bash(mv core_api.md design_core_package.md)",
+      "Bash(mv plan.md plan_privacy_policy.md)",
+      "Bash(mv remain_task.md tasks_backlog.md)"
     ]
   }
 }

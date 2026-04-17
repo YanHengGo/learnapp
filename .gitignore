@@ -25,9 +25,3 @@ local.properties
 maestro/results/
 .externalNativeBuild/
 .cxx/
-
-# Markdown
-*.md
-!README.md
-!CLAUDE.md
-!.claude/commands/*.md
