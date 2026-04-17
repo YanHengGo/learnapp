@@ -9,6 +9,7 @@
 - **タスク管理** — 曜日・期間指定のタスク作成・編集・アーカイブ
 - **日々の記録** — 日別の学習ログ記録・チェック
 - **集計** — カレンダー形式の学習成績サマリー・科目別統計
+- **プライバシーポリシー** — ログイン前・ログイン後どちらからでも閲覧可能
 
 ## スクリーンショット
 
@@ -21,7 +22,7 @@
 | 言語 | Kotlin |
 | UI | Jetpack Compose, Material3 |
 | ナビゲーション | Navigation Compose |
-| 状態管理 | ViewModel, Compose State |
+| 状態管理 | ViewModel, StateFlow, collectAsStateWithLifecycle |
 | DI | Hilt |
 | ネットワーク | Retrofit, OkHttp |
 | ローカルストレージ | DataStore Preferences |
@@ -92,6 +93,22 @@ cd learnapp
 | GET | `/api/v1/children/{childId}/summary` | 学習サマリー取得 |
 
 ## テスト
+
+### Compose Preview（@Preview）
+
+各 feature モジュールに Jetpack Compose の `@Preview` アノテーションを実装しています。Android Studio のプレビュー機能で実機・エミュレーターなしに UI を確認できます。
+
+| モジュール | ファイル | パターン数 |
+|---|---|---|
+| feature:auth | `AuthScreenPreview.kt` | 5（ログイン・新規登録・ローディング・エラー・プライバシーポリシー）|
+| feature:splash | `SplashScreenPreview.kt` | 1 |
+| feature:home | `HomeScreenPreview.kt` | 5（各タブ・子ども切り替え・ログアウト確認ダイアログ）|
+| feature:tasks | `TasksScreenPreview.kt` | 5（ローディング・空・一覧・追加/編集ダイアログ）|
+| feature:daily | `DailyScreenPreview.kt` | 4（ローディング・空・記録あり・保存中）|
+| feature:summary | `SummaryScreenPreview.kt` | 3（ローディング・データなし・データあり）|
+| feature:children | `ChildrenScreenPreview.kt` | 7（一覧・ダイアログ含む）|
+
+---
 
 ### Compose UI テスト
 
@@ -180,6 +197,37 @@ maestro test maestro/flows/01_auth_login.yaml --env TEST_EMAIL=xxx --env TEST_PA
 | `09_full_flow.yaml` | ログイン〜タスク追加〜記録〜集計の全体フロー | 不要（条件付きログイン）|
 
 テスト結果（JUnit XML）は `maestro/results/` に出力されます（`.gitignore` 対象）。
+
+---
+
+### スクリーンショット自動保存
+
+各 feature モジュールの Compose UI テスト実行時に、スクリーンショットが自動保存されます。
+
+- 保存先: Android TestStorage（共有ストレージ `/sdcard/googletest/test_outputfiles/`）
+- 取得方法:
+
+```bash
+adb pull /sdcard/googletest/test_outputfiles/ ./screenshots
+```
+
+---
+
+## 設計ドキュメント
+
+設計資料は `design/` フォルダに格納しています。
+
+| ファイル | 内容 |
+|---|---|
+| `guide_state_management.md` | StateFlow / UiState 状態管理ガイド |
+| `api_reference.md` | API リファレンス |
+| `plan_preview.md` | @Preview 実装計画 |
+| `plan_privacy_policy.md` | プライバシーポリシー実装計画 |
+| `design_core_package.md` | core モジュール設計 |
+| `design_home_navigation.md` | ホーム画面ナビゲーション設計 |
+| `design_splash_auth_flow.md` | スプラッシュ・認証フロー設計 |
+| `design_screenshot_test.md` | スクリーンショットテスト設計 |
+| `tasks_backlog.md` | タスクバックログ |
 
 ---
 
