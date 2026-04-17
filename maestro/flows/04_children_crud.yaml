@@ -6,7 +6,7 @@
 #   2. 追加した子どもを編集
 #   3. 編集した子どもを削除
 # ========================================
-appId: com.learn.app
+appId: com.yanheng.learnapp
 ---
 
 - stopApp

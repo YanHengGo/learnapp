@@ -1,6 +1,6 @@
 # ログアウト共通サブフロー
 # 子ども一覧 or ホーム画面から呼び出す
-appId: com.learn.app
+appId: com.yanheng.learnapp
 ---
 - tapOn:
     id: "logoutButton"
