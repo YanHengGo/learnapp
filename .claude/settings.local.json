@@ -54,7 +54,17 @@
       "Bash(./gradlew :feature:home:compileDebugKotlin)",
       "Bash(./gradlew :feature:home:compileDebugKotlin --info)",
       "Bash(./gradlew :feature:auth:compileDebugKotlin :feature:splash:compileDebugKotlin :feature:home:compileDebugKotlin :feature:tasks:compileDebugKotlin :feature:daily:compileDebugKotlin :feature:summary:compileDebugKotlin)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(RES=/Users/yanheng/dev/learnapp/app/src/main/res)",
+      "Bash(SRC=~/Downloads/icon)",
+      "Bash(__NEW_LINE_1c9d77bd60f4e5d1__ cp:*)",
+      "Bash(cp \"$SRC/icon_48.png\" \"$RES/mipmap-mdpi/ic_launcher_round.png\")",
+      "Bash(cp \"$SRC/icon_72.png\" \"$RES/mipmap-hdpi/ic_launcher_round.png\")",
+      "Bash(__NEW_LINE_765915cb5c7beeaa__ cp:*)",
+      "Bash(cp \"$SRC/icon_72.png\" \"$RES/mipmap-hdpi/ic_launcher_fg.png\")",
+      "Bash(cp \"$SRC/icon_96.png\" \"$RES/mipmap-xhdpi/ic_launcher_fg.png\")",
+      "Bash(cp \"$SRC/icon_144.png\" \"$RES/mipmap-xxhdpi/ic_launcher_fg.png\")",
+      "Bash(cp \"$SRC/icon_192.png\" \"$RES/mipmap-xxxhdpi/ic_launcher_fg.png\")"
     ]
   }
 }
