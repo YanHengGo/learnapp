@@ -53,7 +53,8 @@
       "Bash(./gradlew :feature:auth:compileDebugKotlin :feature:splash:compileDebugKotlin :feature:home:compileDebugKotlin :feature:tasks:compileDebugKotlin :feature:daily:compileDebugKotlin)",
       "Bash(./gradlew :feature:home:compileDebugKotlin)",
       "Bash(./gradlew :feature:home:compileDebugKotlin --info)",
-      "Bash(./gradlew :feature:auth:compileDebugKotlin :feature:splash:compileDebugKotlin :feature:home:compileDebugKotlin :feature:tasks:compileDebugKotlin :feature:daily:compileDebugKotlin :feature:summary:compileDebugKotlin)"
+      "Bash(./gradlew :feature:auth:compileDebugKotlin :feature:splash:compileDebugKotlin :feature:home:compileDebugKotlin :feature:tasks:compileDebugKotlin :feature:daily:compileDebugKotlin :feature:summary:compileDebugKotlin)",
+      "WebFetch(domain:github.com)"
     ]
   }
 }
