@@ -3,6 +3,7 @@ package com.learn.app.feature.daily
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.learn.app.core.common.toErrorMessage
 import com.learn.app.core.domain.usecase.GetDailyViewUseCase
 import com.learn.app.core.domain.usecase.UpdateDailyLogUseCase
 import com.learn.app.core.model.DailyItem
@@ -57,8 +58,8 @@ class DailyViewModel @Inject constructor(
                         },
                     ) }
                 }
-                .onFailure {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = "データの取得に失敗しました") }
+                .onFailure { throwable ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = throwable.toErrorMessage("データの取得に失敗しました")) }
                 }
         }
     }
@@ -113,8 +114,8 @@ class DailyViewModel @Inject constructor(
                 .onSuccess {
                     _uiState.update { it.copy(isSaving = false, saveSuccess = true) }
                 }
-                .onFailure {
-                    _uiState.update { it.copy(isSaving = false, errorMessage = "保存に失敗しました") }
+                .onFailure { throwable ->
+                    _uiState.update { it.copy(isSaving = false, errorMessage = throwable.toErrorMessage("保存に失敗しました")) }
                 }
         }
     }

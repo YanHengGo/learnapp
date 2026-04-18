@@ -3,6 +3,7 @@ package com.learn.app.feature.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.learn.app.core.domain.usecase.LoginUseCase
+import java.io.IOException
 import com.learn.app.core.domain.usecase.SignupUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,6 +63,8 @@ class AuthViewModel @Inject constructor(
                 }
                 .onFailure { error ->
                     val message = when {
+                        error is IOException ->
+                            "ネットワークに接続できません。接続を確認してください。"
                         error.message?.contains("invalid credentials") == true ->
                             "メールアドレスまたはパスワードが正しくありません"
                         error.message?.contains("email already exists") == true ->
