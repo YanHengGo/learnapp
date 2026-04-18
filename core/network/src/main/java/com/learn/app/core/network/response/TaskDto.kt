@@ -12,4 +12,5 @@ data class TaskDto(
     @SerializedName("is_archived") val isArchived: Boolean,
     @SerializedName("start_date") val startDate: String?,
     @SerializedName("end_date") val endDate: String?,
+    @SerializedName("sort_order") val sortOrder: Int = 0,
 )

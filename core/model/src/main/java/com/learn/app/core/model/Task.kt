@@ -10,4 +10,5 @@ data class Task(
     val isArchived: Boolean,
     val startDate: String?,
     val endDate: String?,
+    val sortOrder: Int = 0,
 )

@@ -13,4 +13,5 @@ fun TaskDto.toModel() = Task(
     isArchived = isArchived,
     startDate = startDate,
     endDate = endDate,
+    sortOrder = sortOrder,
 )
