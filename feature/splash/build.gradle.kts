@@ -7,17 +7,17 @@ plugins {
 
 android {
     namespace = "com.learn.app.feature.splash"
-    compileSdk = 36
+    compileSdk = libs.versions.compileSdk.get().toInt()
     defaultConfig {
-        minSdk = 28
+        minSdk = libs.versions.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["useTestStorageService"] = "true"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmVersion.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.jvmVersion.get())
     }
-    kotlin { jvmToolchain(11) }
+    kotlin { jvmToolchain(libs.versions.jvmVersion.get().toInt()) }
     buildFeatures { compose = true }
     testOptions {
         managedDevices {}
