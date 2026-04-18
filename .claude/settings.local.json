@@ -64,7 +64,13 @@
       "Bash(cp \"$SRC/icon_72.png\" \"$RES/mipmap-hdpi/ic_launcher_fg.png\")",
       "Bash(cp \"$SRC/icon_96.png\" \"$RES/mipmap-xhdpi/ic_launcher_fg.png\")",
       "Bash(cp \"$SRC/icon_144.png\" \"$RES/mipmap-xxhdpi/ic_launcher_fg.png\")",
-      "Bash(cp \"$SRC/icon_192.png\" \"$RES/mipmap-xxxhdpi/ic_launcher_fg.png\")"
+      "Bash(cp \"$SRC/icon_192.png\" \"$RES/mipmap-xxxhdpi/ic_launcher_fg.png\")",
+      "Bash(grep -v \"^--$\")",
+      "Bash(npx tsc:*)",
+      "Bash(find ~/dev/ts-memo-api -name *.yml -o -name *.yaml)",
+      "Bash(curl -s http://localhost:3000/health)",
+      "Bash(./gradlew :feature:home:assembleDebug)",
+      "Bash(./gradlew :feature:children:assembleDebug :feature:home:assembleDebug)"
     ]
   }
 }

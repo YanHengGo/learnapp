@@ -76,6 +76,10 @@ fun ChildrenScreen(
         onSaveChild = viewModel::onSaveChild,
         onErrorDismiss = viewModel::onErrorDismiss,
         onLoadChildren = viewModel::loadChildren,
+        onShowDeleteAccountConfirm = viewModel::onShowDeleteAccountConfirm,
+        onDismissDeleteAccountConfirm = viewModel::onDismissDeleteAccountConfirm,
+        onDeleteAccount = { viewModel.onDeleteAccount(onLoggedOut) },
+        onDismissDeleteAccountError = viewModel::onDismissDeleteAccountError,
     )
 }
 
@@ -98,6 +102,10 @@ internal fun ChildrenContent(
     onErrorDismiss: () -> Unit,
     onLoadChildren: () -> Unit,
     onPrivacyPolicy: () -> Unit = {},
+    onShowDeleteAccountConfirm: () -> Unit = {},
+    onDismissDeleteAccountConfirm: () -> Unit = {},
+    onDeleteAccount: () -> Unit = {},
+    onDismissDeleteAccountError: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var menuExpanded by remember { mutableStateOf(false) }
@@ -132,6 +140,13 @@ internal fun ChildrenContent(
                             onClick = {
                                 menuExpanded = false
                                 onPrivacyPolicy()
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("アカウントを削除") },
+                            onClick = {
+                                menuExpanded = false
+                                onShowDeleteAccountConfirm()
                             },
                         )
                     }
@@ -213,6 +228,37 @@ internal fun ChildrenContent(
             dismissButton = {
                 TextButton(onClick = onDismissLogoutConfirm) {
                     Text("キャンセル")
+                }
+            },
+        )
+    }
+
+    if (uiState.showDeleteAccountConfirm) {
+        AlertDialog(
+            onDismissRequest = onDismissDeleteAccountConfirm,
+            title = { Text("アカウントを削除") },
+            text = { Text("アカウントを削除すると、すべてのデータが削除され復元できません。") },
+            confirmButton = {
+                TextButton(onClick = onDeleteAccount) {
+                    Text("削除する")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismissDeleteAccountConfirm) {
+                    Text("キャンセル")
+                }
+            },
+        )
+    }
+
+    if (uiState.deleteAccountError) {
+        AlertDialog(
+            onDismissRequest = onDismissDeleteAccountError,
+            title = { Text("エラー") },
+            text = { Text("削除に失敗しました。時間をおいて再度お試しください。") },
+            confirmButton = {
+                TextButton(onClick = onDismissDeleteAccountError) {
+                    Text("閉じる")
                 }
             },
         )

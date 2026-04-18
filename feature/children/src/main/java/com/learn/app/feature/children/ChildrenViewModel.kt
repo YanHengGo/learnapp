@@ -3,6 +3,7 @@ package com.learn.app.feature.children
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.learn.app.core.domain.usecase.CreateChildUseCase
+import com.learn.app.core.domain.usecase.DeleteAccountUseCase
 import com.learn.app.core.domain.usecase.DeleteChildUseCase
 import com.learn.app.core.domain.usecase.GetChildrenUseCase
 import com.learn.app.core.domain.usecase.LogoutUseCase
@@ -23,6 +24,7 @@ class ChildrenViewModel @Inject constructor(
     private val updateChildUseCase: UpdateChildUseCase,
     private val deleteChildUseCase: DeleteChildUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val deleteAccountUseCase: DeleteAccountUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ChildrenUiState())
@@ -130,4 +132,19 @@ class ChildrenViewModel @Inject constructor(
             onSuccess()
         }
     }
+
+    fun onShowDeleteAccountConfirm() { _uiState.update { it.copy(showDeleteAccountConfirm = true) } }
+    fun onDismissDeleteAccountConfirm() { _uiState.update { it.copy(showDeleteAccountConfirm = false) } }
+
+    fun onDeleteAccount(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            deleteAccountUseCase()
+                .onSuccess { onSuccess() }
+                .onFailure {
+                    _uiState.update { it.copy(showDeleteAccountConfirm = false, deleteAccountError = true) }
+                }
+        }
+    }
+
+    fun onDismissDeleteAccountError() { _uiState.update { it.copy(deleteAccountError = false) } }
 }
