@@ -2,6 +2,7 @@ package com.learn.app.feature.children
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.learn.app.core.common.toErrorMessage
 import com.learn.app.core.domain.usecase.CreateChildUseCase
 import com.learn.app.core.domain.usecase.DeleteAccountUseCase
 import com.learn.app.core.domain.usecase.DeleteChildUseCase
@@ -41,8 +42,8 @@ class ChildrenViewModel @Inject constructor(
                 .onSuccess { children ->
                     _uiState.update { it.copy(isLoading = false, isLoadError = false, children = children) }
                 }
-                .onFailure {
-                    _uiState.update { it.copy(isLoading = false, isLoadError = true, errorMessage = "データの取得に失敗しました") }
+                .onFailure { throwable ->
+                    _uiState.update { it.copy(isLoading = false, isLoadError = true, errorMessage = throwable.toErrorMessage("データの取得に失敗しました")) }
                 }
         }
     }
@@ -91,7 +92,7 @@ class ChildrenViewModel @Inject constructor(
                         }
                         loadChildren()
                     }
-                    .onFailure { _uiState.update { it.copy(isSaving = false, errorMessage = "更新に失敗しました") } }
+                    .onFailure { throwable -> _uiState.update { it.copy(isSaving = false, errorMessage = throwable.toErrorMessage("更新に失敗しました")) } }
             } else {
                 createChildUseCase(name, grade)
                     .onSuccess {
@@ -106,7 +107,7 @@ class ChildrenViewModel @Inject constructor(
                         }
                         loadChildren()
                     }
-                    .onFailure { _uiState.update { it.copy(isSaving = false, errorMessage = "追加に失敗しました") } }
+                    .onFailure { throwable -> _uiState.update { it.copy(isSaving = false, errorMessage = throwable.toErrorMessage("追加に失敗しました")) } }
             }
         }
     }
@@ -115,7 +116,7 @@ class ChildrenViewModel @Inject constructor(
         viewModelScope.launch {
             deleteChildUseCase(child.id)
                 .onSuccess { loadChildren() }
-                .onFailure { _uiState.update { it.copy(errorMessage = "削除に失敗しました") } }
+                .onFailure { throwable -> _uiState.update { it.copy(errorMessage = throwable.toErrorMessage("削除に失敗しました")) } }
         }
     }
 

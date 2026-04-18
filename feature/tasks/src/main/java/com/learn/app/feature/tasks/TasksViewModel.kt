@@ -3,6 +3,7 @@ package com.learn.app.feature.tasks
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.learn.app.core.common.toErrorMessage
 import com.learn.app.core.domain.usecase.ArchiveTaskUseCase
 import com.learn.app.core.domain.usecase.CreateTaskUseCase
 import com.learn.app.core.domain.usecase.GetTasksUseCase
@@ -43,8 +44,8 @@ class TasksViewModel @Inject constructor(
                 .onSuccess { tasks ->
                     _uiState.update { it.copy(isLoading = false, tasks = tasks) }
                 }
-                .onFailure {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = "タスクの取得に失敗しました") }
+                .onFailure { throwable ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = throwable.toErrorMessage("タスクの取得に失敗しました")) }
                 }
         }
     }
@@ -123,8 +124,8 @@ class TasksViewModel @Inject constructor(
                         _uiState.update { it.copy(isSaving = false, showDialog = false, editingTask = null) }
                         loadTasks()
                     }
-                    .onFailure {
-                        _uiState.update { it.copy(isSaving = false, errorMessage = "更新に失敗しました") }
+                    .onFailure { throwable ->
+                        _uiState.update { it.copy(isSaving = false, errorMessage = throwable.toErrorMessage("更新に失敗しました")) }
                     }
             } else {
                 createTaskUseCase(childId, task)
@@ -132,8 +133,8 @@ class TasksViewModel @Inject constructor(
                         _uiState.update { it.copy(isSaving = false, showDialog = false) }
                         loadTasks()
                     }
-                    .onFailure {
-                        _uiState.update { it.copy(isSaving = false, errorMessage = "追加に失敗しました") }
+                    .onFailure { throwable ->
+                        _uiState.update { it.copy(isSaving = false, errorMessage = throwable.toErrorMessage("追加に失敗しました")) }
                     }
             }
         }
@@ -143,7 +144,7 @@ class TasksViewModel @Inject constructor(
         viewModelScope.launch {
             archiveTaskUseCase(task.id, true)
                 .onSuccess { loadTasks() }
-                .onFailure { _uiState.update { it.copy(errorMessage = "アーカイブに失敗しました") } }
+                .onFailure { throwable -> _uiState.update { it.copy(errorMessage = throwable.toErrorMessage("アーカイブに失敗しました")) } }
         }
     }
 
@@ -155,9 +156,9 @@ class TasksViewModel @Inject constructor(
         viewModelScope.launch {
             val orders = current.mapIndexed { index, task -> task.id to index }
             reorderTasksUseCase(childId, orders)
-                .onFailure {
+                .onFailure { throwable ->
                     loadTasks()
-                    _uiState.update { it.copy(errorMessage = "並び替えに失敗しました") }
+                    _uiState.update { it.copy(errorMessage = throwable.toErrorMessage("並び替えに失敗しました")) }
                 }
         }
     }

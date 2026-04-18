@@ -8,6 +8,7 @@ data class HomeUiState(
     val showSwitcher: Boolean = false,
     val showLogoutConfirm: Boolean = false,
     val selectedTab: HomeTab = HomeTab.DAILY,
+    val errorMessage: String? = null,
 )
 
 enum class HomeTab { DAILY, TASKS, SUMMARY }

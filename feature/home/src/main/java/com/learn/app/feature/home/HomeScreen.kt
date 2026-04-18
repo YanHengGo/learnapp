@@ -15,6 +15,9 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -98,6 +101,7 @@ fun HomeScreen(
         onDismissLogoutConfirm = viewModel::onDismissLogoutConfirm,
         onLogout = { viewModel.onLogout(onLoggedOut) },
         onPrivacyPolicy = onPrivacyPolicy,
+        onErrorDismiss = viewModel::onErrorDismiss,
     ) { paddingValues ->
         NavHost(
             navController = innerNavController,
@@ -156,9 +160,19 @@ internal fun HomeContent(
     onDismissLogoutConfirm: () -> Unit,
     onLogout: () -> Unit,
     onPrivacyPolicy: () -> Unit = {},
+    onErrorDismiss: () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            onErrorDismiss()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -193,6 +207,7 @@ internal fun HomeContent(
                 },
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(

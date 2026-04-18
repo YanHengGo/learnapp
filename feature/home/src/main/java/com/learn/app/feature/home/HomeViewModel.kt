@@ -3,6 +3,7 @@ package com.learn.app.feature.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.learn.app.core.common.toErrorMessage
 import com.learn.app.core.domain.usecase.GetChildrenUseCase
 import com.learn.app.core.domain.usecase.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,7 +42,14 @@ class HomeViewModel @Inject constructor(
                         )
                     }
                 }
+                .onFailure { throwable ->
+                    _uiState.update { it.copy(errorMessage = throwable.toErrorMessage("データの取得に失敗しました")) }
+                }
         }
+    }
+
+    fun onErrorDismiss() {
+        _uiState.update { it.copy(errorMessage = null) }
     }
 
     fun onShowSwitcher() { _uiState.update { it.copy(showSwitcher = true) } }

@@ -72,7 +72,8 @@
       "Bash(./gradlew :feature:home:assembleDebug)",
       "Bash(./gradlew :feature:children:assembleDebug :feature:home:assembleDebug)",
       "Bash(xargs cat:*)",
-      "Bash(./gradlew :feature:tasks:assembleDebug)"
+      "Bash(./gradlew :feature:tasks:assembleDebug)",
+      "Bash(grep:*)"
     ]
   }
 }

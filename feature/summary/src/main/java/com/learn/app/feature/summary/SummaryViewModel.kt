@@ -3,6 +3,7 @@ package com.learn.app.feature.summary
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.learn.app.core.common.toErrorMessage
 import com.learn.app.core.domain.usecase.GetCalendarSummaryUseCase
 import com.learn.app.core.domain.usecase.GetSummaryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,7 +51,10 @@ class SummaryViewModel @Inject constructor(
 
             val calendar = calendarResult.getOrNull()
             val summary = summaryResult.getOrNull()
-            val error = if (calendarResult.isFailure && summaryResult.isFailure) "データの取得に失敗しました" else null
+            val error = if (calendarResult.isFailure && summaryResult.isFailure)
+                (calendarResult.exceptionOrNull() ?: summaryResult.exceptionOrNull())
+                    ?.toErrorMessage("データの取得に失敗しました")
+            else null
 
             _uiState.update {
                 it.copy(
