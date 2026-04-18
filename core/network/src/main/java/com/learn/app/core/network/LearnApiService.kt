@@ -41,6 +41,9 @@ interface LearnApiService {
     @GET("api/v1/me")
     suspend fun getMe(): MeDto
 
+    @DELETE("api/v1/me")
+    suspend fun deleteAccount()
+
     // ── Children ──────────────────────────────────────────────────────────
 
     @GET("api/v1/children")

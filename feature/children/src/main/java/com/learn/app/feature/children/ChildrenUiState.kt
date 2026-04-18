@@ -13,4 +13,6 @@ data class ChildrenUiState(
     val dialogGrade: String = "",
     val isSaving: Boolean = false,
     val showLogoutConfirm: Boolean = false,
+    val showDeleteAccountConfirm: Boolean = false,
+    val deleteAccountError: Boolean = false,
 )

@@ -7,4 +7,5 @@ interface AuthRepository {
     suspend fun signup(email: String, password: String)
     suspend fun getMe(): User
     suspend fun logout()
+    suspend fun deleteAccount()
 }

@@ -38,4 +38,9 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun logout() {
         tokenDataStore.clearToken()
     }
+
+    override suspend fun deleteAccount() {
+        api.deleteAccount()
+        tokenDataStore.clearToken()
+    }
 }
