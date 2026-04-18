@@ -6,13 +6,13 @@ plugins {
 
 android {
     namespace = "com.learn.app.core.datastore"
-    compileSdk = 36
-    defaultConfig { minSdk = 28 }
+    compileSdk = libs.versions.compileSdk.get().toInt()
+    defaultConfig { minSdk = libs.versions.minSdk.get().toInt() }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmVersion.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.jvmVersion.get())
     }
-    kotlin { jvmToolchain(11) }
+    kotlin { jvmToolchain(libs.versions.jvmVersion.get().toInt()) }
 }
 
 dependencies {

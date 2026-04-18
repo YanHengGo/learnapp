@@ -22,8 +22,8 @@ android {
 
     defaultConfig {
         applicationId = "com.yanheng.learnapp"
-        minSdk = 28
-        targetSdk = 36
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0.0"
 
@@ -51,8 +51,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.jvmVersion.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.jvmVersion.get())
     }
     buildFeatures {
         compose = true
