@@ -12,7 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -21,7 +22,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Edit
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -66,6 +70,7 @@ fun TasksScreen(
         onShowAddDialog = viewModel::onShowAddDialog,
         onShowEditDialog = viewModel::onShowEditDialog,
         onArchiveTask = viewModel::onArchiveTask,
+        onMove = viewModel::onMove,
         onNameChange = viewModel::onNameChange,
         onDescriptionChange = viewModel::onDescriptionChange,
         onSubjectChange = viewModel::onSubjectChange,
@@ -87,6 +92,7 @@ internal fun TasksContent(
     onShowAddDialog: () -> Unit,
     onShowEditDialog: (Task) -> Unit,
     onArchiveTask: (Task) -> Unit,
+    onMove: (from: Int, to: Int) -> Unit,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onSubjectChange: (String) -> Unit,
@@ -154,17 +160,31 @@ internal fun TasksContent(
                         .padding(32.dp),
                 )
             } else {
+                val lazyListState = rememberLazyListState()
+                val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
+                    onMove(from.index, to.index)
+                }
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
+                    state = lazyListState,
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(uiState.tasks, key = { it.id }) { task ->
-                        TaskCard(
-                            task = task,
-                            onEdit = { onShowEditDialog(task) },
-                            onArchive = { onArchiveTask(task) },
-                        )
+                    itemsIndexed(uiState.tasks, key = { _, task -> task.id }) { _, task ->
+                        ReorderableItem(reorderableState, key = task.id) {
+                            TaskCard(
+                                task = task,
+                                onEdit = { onShowEditDialog(task) },
+                                onArchive = { onArchiveTask(task) },
+                                dragHandle = {
+                                    Icon(
+                                        imageVector = Icons.Filled.DragHandle,
+                                        contentDescription = "並び替え",
+                                        modifier = Modifier.draggableHandle(),
+                                    )
+                                },
+                            )
+                        }
                     }
                 }
             }
@@ -192,15 +212,17 @@ private fun TaskCard(
     task: Task,
     onEdit: () -> Unit,
     onArchive: () -> Unit,
+    dragHandle: @Composable () -> Unit = {},
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(start = 8.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            dragHandle()
+            Column(modifier = Modifier.weight(1f).padding(start = 4.dp)) {
                 Text(
                     text = task.name,
                     style = MaterialTheme.typography.titleMedium,

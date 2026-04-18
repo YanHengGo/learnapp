@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.learn.app.core.domain.usecase.ArchiveTaskUseCase
 import com.learn.app.core.domain.usecase.CreateTaskUseCase
 import com.learn.app.core.domain.usecase.GetTasksUseCase
+import com.learn.app.core.domain.usecase.ReorderTasksUseCase
 import com.learn.app.core.domain.usecase.UpdateTaskUseCase
 import com.learn.app.core.model.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,7 @@ class TasksViewModel @Inject constructor(
     private val createTaskUseCase: CreateTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val archiveTaskUseCase: ArchiveTaskUseCase,
+    private val reorderTasksUseCase: ReorderTasksUseCase,
 ) : ViewModel() {
 
     private val childId: String = checkNotNull(savedStateHandle["childId"])
@@ -142,6 +144,21 @@ class TasksViewModel @Inject constructor(
             archiveTaskUseCase(task.id, true)
                 .onSuccess { loadTasks() }
                 .onFailure { _uiState.update { it.copy(errorMessage = "アーカイブに失敗しました") } }
+        }
+    }
+
+    fun onMove(from: Int, to: Int) {
+        val current = _uiState.value.tasks.toMutableList()
+        val moved = current.removeAt(from)
+        current.add(to, moved)
+        _uiState.update { it.copy(tasks = current) }
+        viewModelScope.launch {
+            val orders = current.mapIndexed { index, task -> task.id to index }
+            reorderTasksUseCase(childId, orders)
+                .onFailure {
+                    loadTasks()
+                    _uiState.update { it.copy(errorMessage = "並び替えに失敗しました") }
+                }
         }
     }
 
