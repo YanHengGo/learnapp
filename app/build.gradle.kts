@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(project(":core:startup"))
+    implementation(project(":core:profiling"))
     implementation(project(":core:data"))
     implementation(project(":core:network"))
     implementation(project(":core:datastore"))
