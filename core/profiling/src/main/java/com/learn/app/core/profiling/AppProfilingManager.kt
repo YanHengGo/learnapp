@@ -14,19 +14,20 @@ internal class AppProfilingManager(private val context: Context) {
     private val profilingManager = context.getSystemService(ProfilingManager::class.java)
 
     fun triggerAll(tag: String) {
-        triggerHeapDump(tag)
+        triggerHeapProfile(tag)
         triggerJavaHeapDump(tag)
         triggerStackSampling(tag)
         triggerSystemTrace(tag)
     }
 
-    private fun triggerHeapDump(tag: String) {
+    private fun triggerHeapProfile(tag: String) {
         profilingManager.requestProfiling(
-            ProfilingManager.PROFILING_TYPE_HEAP_DUMP,
+            ProfilingManager.PROFILING_TYPE_HEAP_PROFILE,
             null,
             "${tag}_heap",
+            null,
             context.mainExecutor,
-        ) { result -> logResult("HeapDump", result) }
+        ) { result -> logResult("HeapProfile", result) }
     }
 
     private fun triggerJavaHeapDump(tag: String) {
@@ -34,41 +35,44 @@ internal class AppProfilingManager(private val context: Context) {
             ProfilingManager.PROFILING_TYPE_JAVA_HEAP_DUMP,
             null,
             "${tag}_java_heap",
+            null,
             context.mainExecutor,
         ) { result -> logResult("JavaHeapDump", result) }
     }
 
     private fun triggerStackSampling(tag: String) {
         val params = Bundle().apply {
-            putInt(ProfilingManager.KEY_DURATION_MS, ProfilingConfig.SAMPLING_DURATION_MS)
-            putInt(ProfilingManager.KEY_STACK_SAMPLING_FREQUENCY, ProfilingConfig.STACK_SAMPLING_FREQUENCY_HZ)
+            putInt("android.profiling.duration_ms", ProfilingConfig.SAMPLING_DURATION_MS)
+            putInt("android.profiling.stack_sampling_frequency_hz", ProfilingConfig.STACK_SAMPLING_FREQUENCY_HZ)
         }
         profilingManager.requestProfiling(
             ProfilingManager.PROFILING_TYPE_STACK_SAMPLING,
             params,
             "${tag}_stack",
+            null,
             context.mainExecutor,
         ) { result -> logResult("StackSampling", result) }
     }
 
     private fun triggerSystemTrace(tag: String) {
         val params = Bundle().apply {
-            putInt(ProfilingManager.KEY_DURATION_MS, ProfilingConfig.SAMPLING_DURATION_MS)
+            putInt("android.profiling.duration_ms", ProfilingConfig.SAMPLING_DURATION_MS)
         }
         profilingManager.requestProfiling(
             ProfilingManager.PROFILING_TYPE_SYSTEM_TRACE,
             params,
             "${tag}_trace",
+            null,
             context.mainExecutor,
         ) { result -> logResult("SystemTrace", result) }
     }
 
     private fun logResult(type: String, result: ProfilingResult) {
-        if (result.errorCode == 0) {
+        if (result.errorCode == ProfilingResult.ERROR_NONE) {
             Log.d(TAG, "[$type] 完了 → ${result.resultFilePath}")
             Log.d(TAG, "  adb pull ${result.resultFilePath} .")
         } else {
-            Log.w(TAG, "[$type] 失敗 errorCode=${result.errorCode}")
+            Log.w(TAG, "[$type] 失敗 errorCode=${result.errorCode} message=${result.errorMessage}")
         }
     }
 }
