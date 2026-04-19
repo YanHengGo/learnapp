@@ -14,11 +14,7 @@ plugins {
 
 android {
     namespace = "com.learn.app"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.yanheng.learnapp"
