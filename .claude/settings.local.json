@@ -76,7 +76,13 @@
       "Bash(grep:*)",
       "Bash(./gradlew :core:network:compileDebugKotlin)",
       "Bash(./gradlew :core:network:compileDebugKotlin --info)",
-      "Bash(./gradlew assembleRelease)"
+      "Bash(./gradlew assembleRelease)",
+      "Bash(jar tf:*)",
+      "Read(//private/tmp/**)",
+      "Bash(jar xf:*)",
+      "Bash(javap -p android/os/ProfilingResult.class)",
+      "Bash(./gradlew :core:profiling:compileDebugKotlin)",
+      "Bash(adb logcat:*)"
     ]
   }
 }
