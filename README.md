@@ -6,9 +6,10 @@
 
 - **認証** — サインアップ / ログイン / ログアウト
 - **子ども管理** — 複数の子どもの登録・編集・削除、切り替え
-- **タスク管理** — 曜日・期間指定のタスク作成・編集・アーカイブ
+- **タスク管理** — 曜日・期間指定のタスク作成・編集・アーカイブ・並び替え（ドラッグ＆ドロップ）
 - **日々の記録** — 日別の学習ログ記録・チェック
 - **集計** — カレンダー形式の学習成績サマリー・科目別統計
+- **アカウント削除** — Play Store 審査要件に対応したアカウント完全削除機能
 - **プライバシーポリシー** — ログイン前・ログイン後どちらからでも閲覧可能
 
 ## スクリーンショット
@@ -36,6 +37,7 @@ Clean Architecture + MVVM パターンを採用したマルチモジュール構
 LearnApp
 ├── app                  エントリーポイント・ナビゲーション
 ├── core
+│   ├── common           共通ユーティリティ（エラーハンドリング等）
 │   ├── model            データモデル
 │   ├── domain           ユースケース・リポジトリインターフェース
 │   ├── data             リポジトリ実装
@@ -54,7 +56,7 @@ LearnApp
 
 ## 動作環境
 
-- Android 9.0 (API 28) 以上
+- Android 12 (API 31) 以上
 
 ## セットアップ
 
@@ -67,7 +69,14 @@ cd learnapp
 
 ### 2. APIエンドポイントの設定
 
-`core/network/src/main/java/com/learn/app/core/network/di/NetworkModule.kt` のベースURLを環境に合わせて変更してください。
+ビルドタイプによって接続先 API が自動的に切り替わります。
+
+| ビルドタイプ | 接続先 |
+|---|---|
+| `debug` | Render API（開発用） |
+| `release` | Google Cloud Run API（本番用） |
+
+URL を変更する場合は `core/network/build.gradle.kts` の `BASE_URL` を編集してください。
 
 ### 3. ビルド
 
@@ -83,14 +92,19 @@ cd learnapp
 |---|---|---|
 | POST | `/api/v1/auth/signup` | ユーザー登録 |
 | POST | `/api/v1/auth/login` | ログイン |
+| DELETE | `/api/v1/me` | アカウント削除 |
 | GET | `/api/v1/children` | 子ども一覧取得 |
 | POST | `/api/v1/children` | 子ども作成 |
 | GET | `/api/v1/children/{childId}/tasks` | タスク一覧取得 |
 | POST | `/api/v1/children/{childId}/tasks` | タスク作成 |
+| PUT | `/api/v1/children/{childId}/tasks/{taskId}` | タスク更新 |
+| PUT | `/api/v1/children/{childId}/tasks/reorder` | タスク並び替え |
+| PATCH | `/api/v1/tasks/{taskId}` | タスクアーカイブ |
 | GET | `/api/v1/children/{childId}/daily-view` | 日次ビュー取得 |
 | PUT | `/api/v1/children/{childId}/daily` | 日次ログ更新 |
 | GET | `/api/v1/children/{childId}/calendar-summary` | カレンダーサマリー取得 |
 | GET | `/api/v1/children/{childId}/summary` | 学習サマリー取得 |
+| GET | `/api/v1/health` | ヘルスチェック |
 
 ## テスト
 
@@ -219,15 +233,18 @@ adb pull /sdcard/googletest/test_outputfiles/ ./screenshots
 
 | ファイル | 内容 |
 |---|---|
+| `tasks_backlog.md` | タスクバックログ |
 | `guide_state_management.md` | StateFlow / UiState 状態管理ガイド |
 | `api_reference.md` | API リファレンス |
-| `plan_preview.md` | @Preview 実装計画 |
-| `plan_privacy_policy.md` | プライバシーポリシー実装計画 |
 | `design_core_package.md` | core モジュール設計 |
 | `design_home_navigation.md` | ホーム画面ナビゲーション設計 |
 | `design_splash_auth_flow.md` | スプラッシュ・認証フロー設計 |
 | `design_screenshot_test.md` | スクリーンショットテスト設計 |
-| `tasks_backlog.md` | タスクバックログ |
+| `plan_delete_account.md` | アカウント削除 全体設計 |
+| `plan_task_reorder.md` | タスク並び替え設計 |
+| `plan_offline_error.md` | オフラインエラー改善設計 |
+| `plan_cloud_run_migration.md` | Cloud Run 移行設計 |
+| `plan_cloud_run_switch.md` | エンドポイント切り替え設計 |
 
 ---
 
