@@ -101,12 +101,14 @@ class DailyViewModel @Inject constructor(
     }
 
     fun onSave() {
-        val items = _uiState.value.taskRows.map { row ->
-            DailyItem(
-                taskId = row.taskId,
-                minutes = if (row.isDone) (row.minutes.toIntOrNull() ?: row.defaultMinutes) else 0,
-            )
-        }
+        val items = _uiState.value.taskRows
+            .filter { it.isDone }
+            .map { row ->
+                DailyItem(
+                    taskId = row.taskId,
+                    minutes = row.minutes.toIntOrNull()?.takeIf { it > 0 } ?: row.defaultMinutes,
+                )
+            }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true) }
