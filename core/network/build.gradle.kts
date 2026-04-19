@@ -13,6 +13,23 @@ android {
         targetCompatibility = JavaVersion.toVersion(libs.versions.jvmVersion.get())
     }
     kotlin { jvmToolchain(libs.versions.jvmVersion.get().toInt()) }
+    buildFeatures { buildConfig = true }
+    buildTypes {
+        debug {
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                "\"https://ts-memo-api-1.onrender.com/\""
+            )
+        }
+        release {
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                "\"https://ts-memo-api-885966500966.asia-northeast1.run.app/\""
+            )
+        }
+    }
 }
 
 dependencies {

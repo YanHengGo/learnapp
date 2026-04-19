@@ -1,5 +1,6 @@
 package com.learn.app.core.network.di
 
+import com.learn.app.core.network.BuildConfig
 import com.learn.app.core.network.LearnApiService
 import dagger.Module
 import dagger.Provides
@@ -29,7 +30,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://ts-memo-api-1.onrender.com/")
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
