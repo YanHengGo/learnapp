@@ -1,13 +1,17 @@
 package com.learn.app.feature.children
 
+import com.learn.app.core.domain.repository.AuthRepository
 import com.learn.app.core.domain.repository.ChildrenRepository
 import com.learn.app.core.domain.usecase.CreateChildUseCase
+import com.learn.app.core.domain.usecase.DeleteAccountUseCase
 import com.learn.app.core.domain.usecase.DeleteChildUseCase
 import com.learn.app.core.domain.usecase.GetChildrenUseCase
+import com.learn.app.core.domain.usecase.LogoutUseCase
 import com.learn.app.core.domain.usecase.UpdateChildUseCase
 import com.learn.app.core.model.Child
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.learn.app.core.model.User
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -47,12 +51,12 @@ class ChildrenViewModelTest {
         viewModel.onSaveChild()
         advanceUntilIdle()
 
-        assertTrue(viewModel.uiState.showAddDialog)
-        assertNull(viewModel.uiState.editingChild)
-        assertEquals("Hanako", viewModel.uiState.dialogName)
-        assertEquals("3年", viewModel.uiState.dialogGrade)
-        assertEquals("追加に失敗しました", viewModel.uiState.errorMessage)
-        assertFalse(viewModel.uiState.isSaving)
+        assertTrue(viewModel.uiState.value.showAddDialog)
+        assertNull(viewModel.uiState.value.editingChild)
+        assertEquals("Hanako", viewModel.uiState.value.dialogName)
+        assertEquals("3年", viewModel.uiState.value.dialogGrade)
+        assertEquals("追加に失敗しました", viewModel.uiState.value.errorMessage)
+        assertFalse(viewModel.uiState.value.isSaving)
     }
 
     @Test
@@ -72,21 +76,25 @@ class ChildrenViewModelTest {
         viewModel.onSaveChild()
         advanceUntilIdle()
 
-        assertEquals(existingChild, viewModel.uiState.editingChild)
-        assertEquals("Jiro", viewModel.uiState.dialogName)
-        assertEquals("4年", viewModel.uiState.dialogGrade)
-        assertEquals("更新に失敗しました", viewModel.uiState.errorMessage)
-        assertFalse(viewModel.uiState.showAddDialog)
-        assertFalse(viewModel.uiState.isSaving)
+        assertEquals(existingChild, viewModel.uiState.value.editingChild)
+        assertEquals("Jiro", viewModel.uiState.value.dialogName)
+        assertEquals("4年", viewModel.uiState.value.dialogGrade)
+        assertEquals("更新に失敗しました", viewModel.uiState.value.errorMessage)
+        assertFalse(viewModel.uiState.value.showAddDialog)
+        assertFalse(viewModel.uiState.value.isSaving)
     }
 
-    private fun createViewModel(repository: ChildrenRepository): ChildrenViewModel =
-        ChildrenViewModel(
+    private fun createViewModel(repository: ChildrenRepository): ChildrenViewModel {
+        val fakeAuth = FakeAuthRepository()
+        return ChildrenViewModel(
             getChildrenUseCase = GetChildrenUseCase(repository),
             createChildUseCase = CreateChildUseCase(repository),
             updateChildUseCase = UpdateChildUseCase(repository),
             deleteChildUseCase = DeleteChildUseCase(repository),
+            logoutUseCase = LogoutUseCase(fakeAuth),
+            deleteAccountUseCase = DeleteAccountUseCase(fakeAuth),
         )
+    }
 
     private class FakeChildrenRepository(
         initialChildren: List<Child> = emptyList(),
@@ -99,12 +107,8 @@ class ChildrenViewModelTest {
 
         override suspend fun createChild(name: String, grade: String?): Child {
             createError?.let { throw it }
-            return Child(
-                id = "new-child",
-                name = name,
-                grade = grade,
-                isActive = true,
-            ).also(children::add)
+            return Child(id = "new-child", name = name, grade = grade, isActive = true)
+                .also(children::add)
         }
 
         override suspend fun updateChild(childId: String, name: String, grade: String?): Child {
@@ -122,5 +126,14 @@ class ChildrenViewModelTest {
         override suspend fun deleteChild(childId: String) {
             children.removeAll { it.id == childId }
         }
+    }
+
+    private class FakeAuthRepository : AuthRepository {
+        override suspend fun login(email: String, password: String): String = ""
+        override suspend fun signup(email: String, password: String) {}
+        override suspend fun getMe(): User =
+            User(id = "", email = "", displayName = null, avatarUrl = null, provider = "")
+        override suspend fun logout() {}
+        override suspend fun deleteAccount() {}
     }
 }

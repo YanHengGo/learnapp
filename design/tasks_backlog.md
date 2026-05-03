@@ -1,6 +1,6 @@
 # タスクバックログ
 
-最終更新: 2026-04-19
+最終更新: 2026-04-20
 
 ---
 
@@ -23,6 +23,7 @@
 | B-1 | アカウント削除機能 | ✅ 完了 |
 | B-2 | タスクの並び替え | ✅ 完了 |
 | B-3 | オフライン時のエラーメッセージ改善 | ✅ 完了 |
+| B-4 | 日々の記録 minutes=0 送信バグ修正 | ✅ 完了 |
 
 ---
 
@@ -31,6 +32,7 @@
 | # | 内容 | 状態 |
 |---|---|---|
 | C-1 | バックエンドの Cloud Run 移行・エンドポイント切り替え | ✅ 完了 |
+| C-2 | compileSdk を libs.versions.toml に統一 | ✅ 完了 |
 
 ---
 
@@ -40,6 +42,16 @@
 |---|---|---|---|
 | D-1 | CI でのビルド自動化（GitHub Actions） | 🔲 未対応 | 現状は Claude Code Review のみ |
 | D-2 | バックエンド API のログアウトエンドポイント追加 | 🔲 未対応 | 現状はクライアント側のトークン削除のみ |
+
+---
+
+## カテゴリ E — 開発者ツール（debug ビルドのみ）
+
+| # | 内容 | 状態 |
+|---|---|---|
+| E-1 | LeakCanary 導入（メモリリーク自動検出） | ✅ 完了 |
+| E-2 | ApplicationStartInfo 導入（起動診断・Logcat 出力） | ✅ 完了 |
+| E-3 | ProfilingManager 導入（起動遅延 2500ms 超で自動プロファイリング） | ✅ 完了 |
 
 ---
 
@@ -56,6 +68,8 @@
 | core:data | 全Repository実装、Mapper、DataModule |
 | core:domain | 全Repositoryインターフェース、全UseCase |
 | core:common | Throwable.toErrorMessage()（オフライン・サーバーエラー判別）|
+| core:startup | ApplicationStartInfo による起動診断（Logcat 出力） |
+| core:profiling | ProfilingManager による起動遅延自動プロファイリング（逐次実行）|
 | feature:splash | スプラッシュ画面・トークンチェック |
 | feature:auth | ログイン・サインアップ・プライバシーポリシー |
 | feature:children | 子ども一覧・追加・編集・削除・アカウント削除 |

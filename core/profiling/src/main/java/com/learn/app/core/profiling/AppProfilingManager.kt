@@ -13,6 +13,10 @@ internal class AppProfilingManager(private val context: Context) {
     private val TAG = "AppProfiling"
     private val profilingManager = context.getSystemService(ProfilingManager::class.java)
 
+    companion object {
+        private const val TAG = "AppProfiling"
+    }
+
     fun triggerAll(tag: String) {
         val queue = listOf(
             ProfilingRequest(

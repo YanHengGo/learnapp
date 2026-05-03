@@ -82,7 +82,9 @@
       "Bash(jar xf:*)",
       "Bash(javap -p android/os/ProfilingResult.class)",
       "Bash(./gradlew :core:profiling:compileDebugKotlin)",
-      "Bash(adb logcat:*)"
+      "Bash(adb logcat:*)",
+      "Bash(./gradlew :feature:children:testDebugUnitTest --tests \"com.learn.app.feature.children.ChildrenViewModelTest\" 2>&1)",
+      "Bash(./gradlew :feature:children:testDebugUnitTest --tests \"com.learn.app.feature.children.ChildrenViewModelTest\")"
     ]
   }
 }
